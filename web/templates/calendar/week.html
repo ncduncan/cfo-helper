@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Calendar — Week{% endblock %}
+{% block content %}
+<div class="flex items-baseline justify-between mb-4">
+  <h1 class="text-2xl font-semibold">Week of {{ grid[0].isoformat() }}</h1>
+  <div class="flex gap-2 text-sm">
+    <a href="/calendar" class="px-2 py-1 rounded hover:bg-slate-100">Month view</a>
+  </div>
+</div>
+{% include "calendar/_grid_week.html" %}
+{% endblock %}

@@ -1,0 +1,47 @@
+<div id="tasks-list-wrap"
+     hx-get="/tasks/fragments/list"
+     hx-trigger="db-changed:tasks from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  {% if not tasks %}
+    <div class="p-4 rounded border border-slate-200 bg-white text-slate-600 text-sm">
+      No tasks. <a href="/tasks/new" class="text-sky-700 hover:underline">Create one</a>
+      from a standard work template.
+    </div>
+  {% else %}
+  <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+        <tr>
+          <th class="text-left px-4 py-2">Title</th>
+          <th class="text-left px-4 py-2">Standard work</th>
+          <th class="text-left px-4 py-2">Owner</th>
+          <th class="text-left px-4 py-2">Status</th>
+          <th class="text-left px-4 py-2">Steps</th>
+          <th class="text-left px-4 py-2">Due</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for t in tasks %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2">
+            <a href="/tasks/{{ t.id }}" class="font-medium text-slate-900 hover:underline">{{ t.title }}</a>
+            <div class="text-xs text-slate-500 font-mono">{{ t.id }}</div>
+          </td>
+          <td class="px-4 py-2 text-xs">{{ t.sw_name }}</td>
+          <td class="px-4 py-2 text-xs">{{ t.owner_name }}</td>
+          <td class="px-4 py-2 text-xs">
+            {% if t.status == 'complete' %}<span class="text-emerald-700">{{ t.status }}</span>
+            {% elif t.status == 'blocked' %}<span class="text-amber-700">{{ t.status }}</span>
+            {% elif t.status == 'in_progress' %}<span class="text-sky-700">{{ t.status }}</span>
+            {% else %}<span class="text-slate-500">{{ t.status }}</span>{% endif %}
+          </td>
+          <td class="px-4 py-2 text-xs">{{ t.steps_complete }}/{{ t.step_count }}</td>
+          <td class="px-4 py-2 text-xs">{% if t.due_date %}{{ t.due_date[:10] }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>

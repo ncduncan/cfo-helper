@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Tasks — CFO Helper{% endblock %}
+{% block content %}
+<div class="flex items-baseline justify-between mb-4">
+  <div>
+    <h1 class="text-2xl font-semibold">Tasks</h1>
+    <p class="text-slate-600 text-sm">
+      Instances of standard work. Click a card to drive each step; AI steps
+      auto-queue for Forge.
+    </p>
+  </div>
+  <div class="flex gap-2 items-center">
+    <a href="/tasks?view=kanban"
+       class="text-sm px-2 py-1 rounded {% if view == 'kanban' %}bg-slate-200{% else %}hover:bg-slate-100{% endif %}">Kanban</a>
+    <a href="/tasks?view=list"
+       class="text-sm px-2 py-1 rounded {% if view == 'list' %}bg-slate-200{% else %}hover:bg-slate-100{% endif %}">List</a>
+    <a href="/tasks/new"
+       class="bg-slate-900 text-white text-sm rounded px-3 py-1.5 hover:bg-slate-700 ml-2">
+      + New task
+    </a>
+  </div>
+</div>
+
+<form method="get" action="/tasks" class="mb-4 flex gap-3 items-end text-sm">
+  <input type="hidden" name="view" value="{{ view }}"/>
+  <div>
+    <label class="block text-xs text-slate-600 mb-1">Assignee</label>
+    <select name="assignee" class="border border-slate-300 rounded px-2 py-1">
+      <option value="">All</option>
+      {% for m in team %}<option value="{{ m.id }}" {% if filter_assignee == m.id %}selected{% endif %}>{{ m.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs text-slate-600 mb-1">Standard work</label>
+    <select name="standard_work_id" class="border border-slate-300 rounded px-2 py-1">
+      <option value="">All</option>
+      {% for sw in sw_list %}<option value="{{ sw.id }}" {% if filter_sw == sw.id %}selected{% endif %}>{{ sw.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm rounded px-3 py-1">Filter</button>
+  <a href="/tasks?view={{ view }}" class="text-xs text-slate-500 hover:underline">clear</a>
+</form>
+
+{% if view == 'list' %}
+  {% include "tasks/_list_table.html" %}
+{% else %}
+  {% include "tasks/_kanban.html" %}
+{% endif %}
+{% endblock %}

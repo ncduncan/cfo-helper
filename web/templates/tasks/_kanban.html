@@ -1,0 +1,32 @@
+<div id="tasks-kanban-wrap"
+     hx-get="/tasks/fragments/kanban"
+     hx-trigger="db-changed:tasks from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    {% for col in kanban_columns %}
+    <div class="bg-white border border-slate-200 rounded">
+      <div class="px-3 py-2 border-b border-slate-200 bg-slate-50 flex justify-between items-baseline">
+        <div class="text-sm font-semibold capitalize">{{ col.replace('_', ' ') }}</div>
+        <div class="text-xs text-slate-500">{{ buckets[col] | length }}</div>
+      </div>
+      <div class="p-2 space-y-2 min-h-[60px]">
+        {% for t in buckets[col] %}
+        <a href="/tasks/{{ t.id }}"
+           class="block bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 px-3 py-2 text-sm">
+          <div class="font-medium text-slate-900 truncate">{{ t.title }}</div>
+          <div class="flex justify-between mt-1 text-xs text-slate-600">
+            <span class="font-mono">{{ t.sw_name }}</span>
+            <span>{{ t.steps_complete }}/{{ t.step_count }}</span>
+          </div>
+          <div class="flex justify-between mt-1 text-xs text-slate-500">
+            <span>{{ t.owner_name }}</span>
+            <span>{% if t.due_date %}{{ t.due_date[:10] }}{% endif %}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

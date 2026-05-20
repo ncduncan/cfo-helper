@@ -1,0 +1,60 @@
+name: deal_underwriting
+title_template: "Deal underwriting — {customer_name}"
+description: |
+  Score a proposed deal against archetype-specific strikezone bands and the
+  delegation matrix. Stage 1 (P2) produces a scorecard + delegation routing.
+  Stage 2 (P3, optional) adds a board-grade memo with NPV/IRR/payback,
+  comparable deals, ASC 606 / SSP allocation, and a deferred-rev profile.
+brief_schema:
+  - { field: customer_name, type: text, required: true,
+      label: "Customer name" }
+  - { field: customer_id,   type: text, required: false,
+      label: "Customer ID (ties to deals table, if known)" }
+  - { field: archetype, type: select, required: true,
+      label: "Customer archetype",
+      options: [tier1, lessor, cargo, bga, military, channel] }
+  - { field: product_mix, type: multiselect, required: true,
+      label: "Products in deal",
+      options: [product_a, product_c, product_b, product_d, ems,
+                ats, records_product, maintenance_product, analytics_platform, legacy_platform] }
+  - { field: tcv_usd,       type: number, required: true,
+      label: "Total contract value (USD)" }
+  - { field: term_months,   type: number, required: true,
+      label: "Contract term (months)" }
+  - { field: list_price_usd,    type: number, required: false,
+      label: "List price (USD, total over term)" }
+  - { field: invoice_price_usd, type: number, required: false,
+      label: "Invoice price (USD, total over term)" }
+  - { field: discount_pct,  type: number, required: false,
+      label: "Discount off list (decimal, e.g. 0.12)" }
+  - { field: payment_terms, type: select, required: true,
+      label: "Payment terms",
+      options: [net30, net60, net90, prepay_annual, prepay_full_term] }
+  - { field: escalator_pct, type: number, required: false,
+      label: "Annual price escalator (decimal)" }
+  - { field: ramp_months,   type: number, required: false,
+      label: "Ramp period (months at reduced/free rate)" }
+  - { field: concessions,   type: markdown, required: false,
+      label: "Special concessions (free months, perf guarantees, MFN, etc.)" }
+  - { field: artifact_paths, type: file_list, required: false,
+      label: "Supporting Excel / PPT artifacts" }
+  - { field: stage_2_required, type: bool, default: false,
+      label: "Run formal memo (Stage 2)?" }
+pipeline:
+  - phase: P1
+    agent: commercial
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p1_underwrite_intake
+  - phase: P2
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p2_underwrite_screen
+  - phase: P3
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p3_underwrite_memo
+    conditional_on: { brief_field: stage_2_required, equals: true }
+  - phase: P4
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_underwrite_review

@@ -1,0 +1,22 @@
+# profile/.denylist — strings the pre-commit hook refuses to let into commits.
+#
+# Copy to ../profile/.denylist (the onboarding skill does this automatically).
+# One literal per line. Lines starting with `#` and blank lines are ignored.
+# Matching is case-insensitive substring.
+#
+# The framework baseline already covers generic credential patterns and
+# the original-maintainer identifiers — see scripts/safety/denylist_check.py.
+# Add the strings below that should also never leak from your machine.
+
+# Company / brand
+# YourCompany Inc.
+# AcmeProductName
+
+# Customers / accounts
+# (one per line)
+
+# Executives / employees (full names)
+# (one per line)
+
+# Internal codenames
+# project-aurora

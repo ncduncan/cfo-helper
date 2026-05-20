@@ -1,0 +1,106 @@
+{
+  "_doc": "Pinned manifest for github.com/anthropics/skills patterns we adapted into scripts/{xlsx,pptx,docx,pdf,charts}/. Updated only by the tooling_freshness_review task type after CFO sign-off.",
+  "upstream_repo": "anthropics/skills",
+  "pinned_at": "2026-05-03",
+  "considered_upstream_skills": [
+    {"name": "algorithmic-art", "decision": "not relevant", "date": "2026-05-03"},
+    {"name": "brand-guidelines", "decision": "consider on next refresh — could inform deck visual language", "date": "2026-05-03"},
+    {"name": "canvas-design", "decision": "consider on next refresh — could inform chart styling", "date": "2026-05-03"},
+    {"name": "claude-api", "decision": "not relevant — covered by superpowers:claude-api", "date": "2026-05-03"},
+    {"name": "doc-coauthoring", "decision": "consider on next refresh — could inform CEO letter Track Changes flow", "date": "2026-05-03"},
+    {"name": "frontend-design", "decision": "not relevant", "date": "2026-05-03"},
+    {"name": "internal-comms", "decision": "consider on next refresh — could inform exec_summary tone", "date": "2026-05-03"},
+    {"name": "mcp-builder", "decision": "deferred — see plan §4 (no MCP server in scope this build)", "date": "2026-05-03"},
+    {"name": "skill-creator", "decision": "not relevant — we use plain Python scripts not skills per CLAUDE.md decision", "date": "2026-05-03"},
+    {"name": "slack-gif-creator", "decision": "not relevant", "date": "2026-05-03"},
+    {"name": "theme-factory", "decision": "consider on next refresh — could inform palette consistency across xlsx/pptx/docx", "date": "2026-05-03"},
+    {"name": "web-artifacts-builder", "decision": "not relevant", "date": "2026-05-03"},
+    {"name": "webapp-testing", "decision": "not relevant", "date": "2026-05-03"}
+  ],
+  "skills": {
+    "xlsx": {
+      "upstream_path": "skills/xlsx",
+      "pinned_date": "2026-05-03",
+      "tracked_files": [
+        "skills/xlsx/SKILL.md"
+      ],
+      "our_local_files": [
+        "scripts/xlsx/__init__.py",
+        "scripts/xlsx/styles.py",
+        "scripts/xlsx/builders.py",
+        "scripts/xlsx/recalc.py",
+        "scripts/xlsx/qa.py"
+      ],
+      "notes": "Adapted: blue/black/green/red color coding, formula-correctness checks, claim-id-as-comment provenance. Omitted: full XSD validation pipeline (we don't author OOXML directly), pptx/docx schema reuse.",
+      "pinned_file_commits": {
+        "skills/xlsx/SKILL.md": "4e6907a33c3c0c9ce7c1836980546aaba78a34b5"
+      }
+    },
+    "pptx": {
+      "upstream_path": "skills/pptx",
+      "pinned_date": "2026-05-03",
+      "tracked_files": [
+        "skills/pptx/SKILL.md",
+        "skills/pptx/editing.md",
+        "skills/pptx/pptxgenjs.md"
+      ],
+      "our_local_files": [
+        "scripts/pptx/__init__.py",
+        "scripts/pptx/templates.py",
+        "scripts/pptx/mor.py",
+        "scripts/pptx/parent_reportout.py",
+        "scripts/pptx/bsr.py"
+      ],
+      "notes": "Adapted: 16:9 widescreen, slide-builder primitives, speaker-notes provenance. Omitted: pptxgenjs (Node.js) \u2014 we use python-pptx for corporate environment friendliness; thumbnail QA (Anthropic uses Pillow + LibreOffice).",
+      "pinned_file_commits": {
+        "skills/pptx/SKILL.md": "4e6907a33c3c0c9ce7c1836980546aaba78a34b5",
+        "skills/pptx/editing.md": "4e6907a33c3c0c9ce7c1836980546aaba78a34b5",
+        "skills/pptx/pptxgenjs.md": "4e6907a33c3c0c9ce7c1836980546aaba78a34b5"
+      }
+    },
+    "docx": {
+      "upstream_path": "skills/docx",
+      "pinned_date": "2026-05-03",
+      "tracked_files": [
+        "skills/docx/SKILL.md"
+      ],
+      "our_local_files": [
+        "scripts/docx/__init__.py",
+        "scripts/docx/styles.py",
+        "scripts/docx/ceo_letter.py",
+        "scripts/docx/table_from_xlsx.py"
+      ],
+      "notes": "Adapted: explicit page dimensions, smart-quote-friendly typography, named heading/body styles. Omitted: docx-js (JavaScript), tracked-changes automation, redline simplification.",
+      "pinned_file_commits": {
+        "skills/docx/SKILL.md": "3d59511518591fa82e6cfcf0438d68dd5dad3e76"
+      }
+    },
+    "pdf": {
+      "upstream_path": "skills/pdf",
+      "pinned_date": "2026-05-03",
+      "tracked_files": [
+        "skills/pdf/SKILL.md",
+        "skills/pdf/reference.md"
+      ],
+      "our_local_files": [
+        "scripts/pdf/__init__.py"
+      ],
+      "notes": "PDF is a utility-only converter for us (no PDF-primary deliverables). Adapted: WeasyPrint MD\u2192HTML\u2192PDF for narrative, LibreOffice headless for office-format inputs, graceful degradation when soffice missing. Omitted: form filling, OCR, watermarking, qpdf/pdftk wrappers.",
+      "pinned_file_commits": {
+        "skills/pdf/SKILL.md": "4e6907a33c3c0c9ce7c1836980546aaba78a34b5",
+        "skills/pdf/reference.md": "ef740771ac901e03fbca3ce4e1c453a96010f30a"
+      }
+    },
+    "charts": {
+      "upstream_path": "(no direct upstream \u2014 cfo-helper-internal)",
+      "pinned_commit": "n/a",
+      "pinned_date": "2026-05-03",
+      "tracked_files": [],
+      "our_local_files": [
+        "scripts/charts/__init__.py",
+        "scripts/charts/library.py"
+      ],
+      "notes": "No direct Anthropic-skills counterpart for financial charts. Tracked only so freshness review can flag the day Anthropic ships a charts-related skill."
+    }
+  }
+}

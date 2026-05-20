@@ -1,0 +1,48 @@
+name: balance_sheet_review
+title_template: "Balance Sheet Review — {period}"
+description: |
+  Quarterly Balance Sheet Review with the parent Controllership (when applicable).
+  Day relative to LCD: TBD — CFO follow-up pending. Controllership-owned
+  (Controller agent), distinct from the FP&A-owned external reporting
+  trio (CEO letter, MOR, parent FP&A report-out). This is the single
+  Controllership-to-parent-Controllership pipe (CLAUDE.md §8 rule 8).
+
+  Output format: Excel + PowerPoint pair.
+  - Excel: account-by-account roll, built via scripts.xlsx.builders.build_bsr_account_roll
+  - PPT:   summary deck, built via scripts.pptx.bsr
+
+  Excel CLI is library-only (called from a Python phase or directly by the
+  agent). PPT CLI:
+    python -m scripts.pptx bsr --spec <spec.json> --output <bsr.pptx>
+output:
+  format: [xlsx, pptx]
+  xlsx_builder: scripts.xlsx.builders.build_bsr_account_roll
+  pptx_builder: scripts.pptx.bsr
+  pptx_cli: "python -m scripts.pptx bsr --spec {spec_path} --output {output_path}"
+  pptx_spec_class: scripts.pptx.bsr.BSRPayload
+frequency: quarterly  # informational — only run on Mar/Jun/Sep/Dec close
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Quarter-end period (YYYY-MM, must be Mar/Jun/Sep/Dec)" }
+  - { field: close_pack_path, type: path, required: true,
+      label: "Path to final quarter close pack" }
+pipeline:
+  - phase: P1
+    agent: controller
+    kind: deterministic+narrative
+    instructions: |
+      Build the BSR Excel + PPT pair:
+      1. Excel: starting from a fresh workbook (or copy from
+         templates/bsr_account_roll.xlsx if it exists), invoke
+         scripts.xlsx.builders.build_bsr_account_roll(wb, df) where df has
+         columns: account, beginning, debits, credits, ending, flux_pct,
+         explanation. Save to outputs/controller/artifacts/bsr_account_roll.xlsx.
+      2. PPT: author outputs/controller/bsr_spec.json conforming to BSRPayload
+         (account roll, flux explanations, material reserves, reviewer samples,
+         open items). Build:
+         python -m scripts.pptx bsr --spec outputs/controller/bsr_spec.json \
+             --output outputs/controller/artifacts/bsr_deck.pptx
+  - phase: P2
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_reviewer

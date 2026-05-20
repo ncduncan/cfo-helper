@@ -1,0 +1,33 @@
+name: strategic_plan_3yr
+title_template: "Strategic plan FY{fy_year} — FY{fy_year_plus_2}"
+description: |
+  Three-year strategic plan. Y1 is anchored to the locked operational
+  plan_fy{YY}; Y2 and Y3 are authored at annual grain via a small
+  percent-driven workbook. Annual cadence — runs once per fiscal year,
+  typically in September alongside the annual plan submission. Lighter
+  than the annual_plan_cycle: fewer assumptions, more abstract,
+  board-facing rather than operational.
+brief_schema:
+  - { field: fy_year, type: number, required: true, label: "Y1 fiscal year (e.g., 2027)" }
+  - { field: fy_year_plus_2, type: number, required: true, label: "Y3 fiscal year (e.g., 2029)" }
+  - { field: strategic_workbook_path, type: text, required: true, label: "Path to strategic 3-yr workbook (small percent/absolute table)" }
+  - { field: revised_workbook_path, type: text, required: false, label: "Corporate-stretched strategic workbook (P3 input)" }
+  - { field: cash_tax_rate_proxy, type: number, required: true, default: 0.21,
+      label: "Cash tax rate (ETR) for FCF proxy — confirm or override (default 0.21 = US federal statutory). Right source: prior-year actual effective rate from parent's segment disclosure." }
+  - { field: notes, type: markdown, label: "Notes" }
+pipeline:
+  - { phase: P1, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_strategic_build,
+      action: "strategic-plan-build → plan_3yr_fy{fy_year} Y2/Y3 rows; locked_against=plan_fy{fy_year}; pause for CFO ratification before submission to corporate" }
+  - { phase: P2, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_strategic_walk,
+      action: "package strategic deck (pptx) — Y1→Y3 walk per strategic-plan-walk; submission to corporate FP&A; manual round-trip" }
+  - { phase: P3, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_strategic_build,
+      action: "strategic-plan-build with corporate stretch overlay → revised plan_3yr_fy{fy_year}; pause for CFO ratification" }
+  - { phase: P4, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_gap,
+      action: "gap-to-stretch on the two strategic versions; memo names what corporate stretched at strategic grain" }
+  - { phase: P5, agent: reviewer, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p4_reviewer,
+      action: "sign off: outyears locked, walk reconciles to operational Y1, mechanism attribution complete" }

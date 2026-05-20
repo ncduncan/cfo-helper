@@ -1,0 +1,21 @@
+# profile/memory/materiality.yaml — variance and reconciliation thresholds.
+# CFO-editable. Adjust to your business's risk tolerance.
+
+variance:
+  abs_usd: 50000            # variance flagged if |actual − baseline| ≥ this
+  pct: 0.05                 # AND |variance_pct| ≥ this
+
+trial_balance:
+  tb_tolerance_usd: 0.50    # consolidated TB tie-out tolerance
+
+drilldown:
+  bridge_tolerance_usd: 100.0   # gl-drilldown bridge difference tolerance
+
+strategic_plan:
+  cash_tax_rate_proxy: null     # set when CFO confirms strategic ETR (e.g., 0.21)
+                                # leave null until confirmed; walk emits FCF=None.
+
+# Subledger reconciliation tolerance (per-subledger).
+# Until subledger feed is wired, gl-recon skill's self-check returns not_applicable.
+# Set when subledger connector lands.
+subledger_recon_tolerance_usd: null

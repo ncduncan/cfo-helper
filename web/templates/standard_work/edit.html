@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New template{% else %}Edit {{ item.name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <h1 class="text-2xl font-semibold">
+    {% if is_new %}New standard work template{% else %}Edit {{ item.name }}{% endif %}
+  </h1>
+  <a href="{% if is_new %}/standard-work{% else %}/standard-work/{{ item.id }}{% endif %}"
+     class="text-sm text-slate-600 hover:underline">cancel</a>
+</div>
+
+<form action="{% if is_new %}/standard-work{% else %}/standard-work/{{ item.id }}{% endif %}"
+      method="post"
+      class="bg-white rounded border border-slate-200 p-6 max-w-3xl space-y-4">
+  {% if is_new %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">ID</label>
+    <input type="text" name="id" required pattern="[a-z0-9][a-z0-9_-]*" maxlength="64"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+           placeholder="monthly_close"/>
+  </div>
+  {% endif %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+    <input type="text" name="name" required maxlength="160"
+           value="{{ item.name if item else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Owner role</label>
+      <input type="text" name="owner_role" required
+             value="{{ item.owner_role if item else '' }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"/>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Cadence (cron or text)</label>
+      <input type="text" name="cadence"
+             value="{{ item.cadence or '' if item else '' }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Due offset (days)</label>
+      <input type="number" name="due_offset_days"
+             value="{{ item.due_offset_days if item else 0 }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Context (markdown)</label>
+    <textarea name="context_md" rows="6"
+              class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono">{{ item.context_md if item else '' }}</textarea>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Requirements (markdown)</label>
+    <textarea name="requirements_md" rows="6"
+              class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono">{{ item.requirements_md if item else '' }}</textarea>
+  </div>
+  <div class="pt-2">
+    <button type="submit"
+            class="bg-slate-900 text-white text-sm rounded px-4 py-2 hover:bg-slate-700">
+      {% if is_new %}Create{% else %}Save{% endif %}
+    </button>
+  </div>
+</form>
+{% endblock %}

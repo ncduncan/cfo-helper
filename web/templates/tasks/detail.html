@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} — Tasks{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold">{{ task.title }}</h1>
+    <div class="text-sm text-slate-500 font-mono">{{ task.id }}</div>
+  </div>
+  <div class="flex gap-2 items-center">
+    <a href="/tasks" class="text-sm text-slate-600 hover:underline">← Tasks</a>
+    {% if task.status != "aborted" and task.status != "complete" %}
+    <form action="/tasks/{{ task.id }}/abort" method="post" class="inline">
+      <button type="submit"
+              onclick="return confirm('Abort this task?')"
+              class="text-xs text-rose-700 hover:underline">abort</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div id="task-detail-wrap"
+     hx-get="/tasks/{{ task.id }}"
+     hx-trigger="db-changed:tasks from:body, db-changed:queue from:body"
+     hx-target="body"
+     hx-swap="none"
+     hx-select="#task-detail-wrap">
+  <div class="bg-white rounded border border-slate-200 p-6 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+    <div><div class="text-slate-500 mb-1">Status</div>
+      <div>
+        {% if task.status == 'complete' %}<span class="text-emerald-700 font-medium">{{ task.status }}</span>
+        {% elif task.status == 'blocked' %}<span class="text-amber-700 font-medium">{{ task.status }}</span>
+        {% elif task.status == 'in_progress' %}<span class="text-sky-700 font-medium">{{ task.status }}</span>
+        {% elif task.status == 'aborted' %}<span class="text-rose-700 font-medium">{{ task.status }}</span>
+        {% else %}<span class="text-slate-500 font-medium">{{ task.status }}</span>{% endif %}
+      </div>
+    </div>
+    <div><div class="text-slate-500 mb-1">Standard work</div>
+      <div class="text-xs"><a href="/standard-work/{{ sw.id }}" class="text-sky-700 hover:underline">{{ sw.name if sw else task.standard_work_id }}</a></div></div>
+    <div><div class="text-slate-500 mb-1">Owner</div>
+      <div class="text-xs">{{ owner.name if owner else (task.owner_id or "—") }}</div></div>
+    <div><div class="text-slate-500 mb-1">Due</div>
+      <div class="text-xs">{{ task.due_date[:10] if task.due_date else "—" }}</div></div>
+    <div><div class="text-slate-500 mb-1">Period</div>
+      <div class="text-xs">{{ task.period or "—" }}</div></div>
+    <div><div class="text-slate-500 mb-1">Created</div>
+      <div class="text-xs">{{ task.created_at[:19] }}</div></div>
+    <div><div class="text-slate-500 mb-1">Started</div>
+      <div class="text-xs">{{ task.started_at[:19] if task.started_at else "—" }}</div></div>
+    <div><div class="text-slate-500 mb-1">Completed</div>
+      <div class="text-xs">{{ task.completed_at[:19] if task.completed_at else "—" }}</div></div>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-2">Steps</h2>
+  <div class="space-y-3">
+    {% for s in steps %}
+    <div class="bg-white rounded border {% if s.instance.status == 'complete' %}border-emerald-300{% elif s.instance.status == 'failed' %}border-rose-300{% elif s.instance.status == 'in_progress' %}border-sky-300{% else %}border-slate-200{% endif %} p-4">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="font-medium">
+            {{ loop.index }}. {{ s.name }}
+            {% if s.kind == 'ai' %}<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 ml-2">AI</span>
+            {% else %}<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-700 ml-2">Human</span>
+            {% endif %}
+            {% if s.checkpoint %}<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 ml-1">checkpoint</span>{% endif %}
+          </div>
+          <div class="text-xs text-slate-500 font-mono">{{ s.step_id }}</div>
+          <div class="text-xs text-slate-600 mt-1">
+            Assignee: <span class="font-mono">{{ s.assignee.name if s.assignee else "—" }}</span>
+            · Role: <span class="font-mono">{{ s.owner_role }}</span>
+            {% if s.depends_on %}· Deps: {% for d in s.depends_on %}<span class="font-mono">{{ d }}</span>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+          </div>
+        </div>
+        <div class="text-xs">
+          {% if s.instance.status == 'complete' %}<span class="text-emerald-700">✓ complete</span>
+          {% elif s.instance.status == 'failed' %}<span class="text-rose-700">✗ failed</span>
+          {% elif s.instance.status == 'in_progress' %}<span class="text-sky-700">in_progress</span>
+          {% elif s.live_queue_row %}
+            <span class="text-amber-700">{{ s.live_queue_row.status }}</span>
+            <a href="/queue/{{ s.live_queue_row.id }}/bundle" class="text-xs text-sky-700 hover:underline ml-1">bundle →</a>
+          {% else %}<span class="text-slate-500">{{ s.instance.status }}</span>{% endif %}
+        </div>
+      </div>
+
+      {% if s.instructions_md %}
+      <details class="text-xs text-slate-600 mb-2">
+        <summary class="cursor-pointer hover:text-slate-900">Instructions</summary>
+        <pre class="whitespace-pre-wrap mt-2 p-2 bg-slate-50 rounded">{{ s.instructions_md }}</pre>
+      </details>
+      {% endif %}
+
+      {% if s.instance.deliverable_paths %}
+      <div class="text-xs text-slate-700 mb-2">
+        <div class="font-medium mb-1">Deliverables:</div>
+        <ul class="list-disc list-inside font-mono">
+          {% for p in s.instance.deliverable_paths %}<li>{{ p }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div class="flex gap-2 mt-2">
+        {# Action: start (human, pending, deps met) #}
+        {% if s.kind == 'human' and s.instance.status == 'pending' and s.depends_met %}
+        <form action="/tasks/{{ task.id }}/steps/{{ s.step_id }}/start" method="post">
+          <button type="submit"
+                  class="bg-sky-700 text-white text-xs rounded px-3 py-1 hover:bg-sky-800">Start</button>
+        </form>
+        {% endif %}
+
+        {# Action: mark complete (human, in_progress) — uses a deliverable text input #}
+        {% if s.kind == 'human' and s.instance.status == 'in_progress' %}
+        <form action="/tasks/{{ task.id }}/steps/{{ s.step_id }}/complete" method="post"
+              class="flex gap-2 items-center">
+          <input type="text" name="deliverable"
+                 placeholder="deliverable path (optional)"
+                 class="border border-slate-300 rounded px-2 py-1 text-xs"/>
+          <button type="submit"
+                  class="bg-emerald-700 text-white text-xs rounded px-3 py-1 hover:bg-emerald-800">Mark complete</button>
+        </form>
+        {% endif %}
+
+        {# Action: queue for Forge (ai, pending, deps met, not already queued) #}
+        {% if s.kind == 'ai' and s.instance.status == 'pending' and s.depends_met and not s.live_queue_row %}
+        <form action="/tasks/{{ task.id }}/steps/{{ s.step_id }}/queue" method="post">
+          <button type="submit"
+                  class="bg-indigo-700 text-white text-xs rounded px-3 py-1 hover:bg-indigo-800">Queue for Forge</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

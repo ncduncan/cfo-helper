@@ -1,0 +1,33 @@
+name: outlook_refresh_quarterly
+title_template: "Outlook refresh Q{quarter} FY{fy_year}"
+description: |
+  Quarterly outlook refresh. Absorbs YTD actuals, any new corporate stretch
+  / challenge, and FP&A's operational responses. Six phases with a CFO
+  checkpoint between proposal and lock — the operator reviews the proposed
+  within-bucket distribution before assumption rows are written.
+brief_schema:
+  - { field: fy_year, type: number, required: true, label: "Fiscal year (e.g., 2026)" }
+  - { field: quarter, type: number, required: true, label: "Quarter that just closed (1, 2, 3, or 4)" }
+  - { field: base_version, type: text, required: true, label: "Base version to refresh from (e.g., plan_fy26 for Q1, prior outlook for later quarters)" }
+  - { field: target_version, type: text, required: true, label: "New outlook version (e.g., outlook_q1_2026)" }
+  - { field: corporate_challenges, type: markdown, label: "Corporate challenges (one per line: 'bucket: amount_usd')" }
+  - { field: operational_responses, type: markdown, label: "Operational responses (one per line: 'bucket: amount_usd')" }
+  - { field: notes, type: markdown, label: "Notes" }
+pipeline:
+  - { phase: P1, agent: controller, kind: deterministic,
+      deterministic_runner: scripts.dispatch.run_p1_controller,
+      action: "freeze YTD GL through close of Q{quarter}" }
+  - { phase: P2, agent: fpa, kind: narrative,
+      action: "capture corporate_challenges and operational_responses as parameterized inputs" }
+  - { phase: P3, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_outlook_compute,
+      action: "outlook-refresh compute → proposal parquet + markdown summary; pause for CFO review of within-bucket distribution" }
+  - { phase: P4, agent: fpa, kind: deterministic,
+      deterministic_runner: scripts.planning.runners.run_outlook_lock,
+      action: "outlook-refresh lock → write per-entity workbooks, run ingest, annotate lock with change_source + locked_against" }
+  - { phase: P5, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_gap,
+      action: "gap-to-stretch base_version → target_version; memo decomposes the delta by change_source tags" }
+  - { phase: P6, agent: reviewer, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p4_reviewer,
+      action: "sign off: outlook locked, lineage complete, trio claims emitted" }

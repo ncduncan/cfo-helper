@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Home — CFO Helper{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-semibold mb-1">Team Console</h1>
+  <p class="text-slate-600 text-sm">
+    Run standard work end-to-end. Humans pick up the human steps; Forge
+    drains the AI queue from VS Code.
+  </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded border border-slate-200 p-4">
+    <div class="text-sm text-slate-600">Team members</div>
+    <div class="text-2xl font-semibold mt-1">{{ team_count }}</div>
+    <a href="/team" class="text-xs text-sky-700 hover:underline">manage →</a>
+  </div>
+  <div class="bg-white rounded border border-slate-200 p-4">
+    <div class="text-sm text-slate-600">Standard work templates</div>
+    <div class="text-2xl font-semibold mt-1">{{ standard_work_count }}</div>
+    <a href="/standard-work" class="text-xs text-sky-700 hover:underline">manage →</a>
+  </div>
+  <div class="bg-white rounded border border-slate-200 p-4">
+    <div class="text-sm text-slate-600">Open tasks</div>
+    <div class="text-2xl font-semibold mt-1">{{ task_count }}</div>
+    <a href="/tasks" class="text-xs text-sky-700 hover:underline">view kanban →</a>
+  </div>
+  <div class="bg-white rounded border border-slate-200 p-4">
+    <div class="text-sm text-slate-600">Forge queue (pending)</div>
+    <div class="text-2xl font-semibold mt-1 {% if queue_pending %}text-amber-700{% endif %}">
+      {{ queue_pending }}
+    </div>
+    <a href="/queue" class="text-xs text-sky-700 hover:underline">open queue →</a>
+  </div>
+</div>
+
+{% if overdue or blocked or stale or pending_memory %}
+<div class="bg-white rounded border border-amber-300 p-6 mb-6">
+  <h2 class="text-lg font-semibold mb-2 text-amber-900">Alerts</h2>
+  <ul class="text-sm space-y-1">
+    {% if overdue %}
+    <li>
+      <span class="font-medium text-rose-700">{{ overdue | length }}</span>
+      overdue task{{ "s" if overdue | length != 1 else "" }}:
+      {% for t in overdue[:5] %}<a href="/tasks/{{ t.id }}" class="text-sky-700 hover:underline">{{ t.title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+      {% if overdue | length > 5 %} (+{{ overdue | length - 5 }} more){% endif %}
+    </li>
+    {% endif %}
+    {% if blocked %}
+    <li>
+      <span class="font-medium text-amber-700">{{ blocked | length }}</span>
+      blocked task{{ "s" if blocked | length != 1 else "" }}:
+      {% for t in blocked[:5] %}<a href="/tasks/{{ t.id }}" class="text-sky-700 hover:underline">{{ t.title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+    </li>
+    {% endif %}
+    {% if stale %}
+    <li>
+      <span class="font-medium text-amber-700">{{ stale | length }}</span>
+      stale queue bundle{{ "s" if stale | length != 1 else "" }}
+      (upstream changed since enqueue)
+    </li>
+    {% endif %}
+    {% if pending_memory %}
+    <li>
+      <span class="font-medium text-amber-700">{{ pending_memory | length }}</span>
+      pending memory-write proposal{{ "s" if pending_memory | length != 1 else "" }} —
+      <a href="/memory-proposals" class="text-sky-700 hover:underline">review</a>
+    </li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="bg-white rounded border border-slate-200 p-6">
+  <h2 class="text-lg font-semibold mb-2">Get started</h2>
+  <ol class="text-sm text-slate-700 list-decimal list-inside space-y-1">
+    <li>Visit <a href="/team" class="text-sky-700 hover:underline">Team</a> to confirm the roster (Forge + your humans).</li>
+    <li>Visit <a href="/standard-work" class="text-sky-700 hover:underline">Standard Work</a> to import the seeded templates.</li>
+    <li>Instantiate a task from a template at <a href="/tasks" class="text-sky-700 hover:underline">Tasks → New</a>.</li>
+    <li>For Forge-owned steps, run <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">/run-queue</code> in VS Code.</li>
+  </ol>
+</div>
+{% endblock %}

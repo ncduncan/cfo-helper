@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}Add step{% else %}Edit step{% endif %} — {{ item.name }}{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <h1 class="text-2xl font-semibold">
+    {% if is_new %}Add step to {{ item.name }}{% else %}Edit step in {{ item.name }}{% endif %}
+  </h1>
+  <a href="/standard-work/{{ item.id }}" class="text-sm text-slate-600 hover:underline">cancel</a>
+</div>
+
+<form action="{% if is_new %}/standard-work/{{ item.id }}/steps{% else %}/standard-work/{{ item.id }}/steps/{{ step.id }}{% endif %}"
+      method="post"
+      class="bg-white rounded border border-slate-200 p-6 max-w-3xl space-y-4">
+  {% if is_new %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Step ID</label>
+    <input type="text" name="id" required pattern="[a-z0-9][a-z0-9_-]*" maxlength="64"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+           placeholder="draft_narrative"/>
+  </div>
+  {% endif %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+    <input type="text" name="name" required maxlength="160"
+           value="{{ step.name if step else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Kind</label>
+      <select name="kind" required class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        {% set k = (step.kind if step else 'human') %}
+        <option value="human" {% if k == 'human' %}selected{% endif %}>Human</option>
+        <option value="ai" {% if k == 'ai' %}selected{% endif %}>AI (Forge)</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Owner role</label>
+      <input type="text" name="owner_role" required
+             value="{{ step.owner_role if step else '' }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"/>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">AI capability hint</label>
+      <input type="text" name="ai_capability_hint"
+             value="{{ step.ai_capability_hint or '' if step else '' }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+             placeholder="fpa, controller, etc."/>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Default assignee</label>
+      <select name="default_assignee_id" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        <option value="">(none)</option>
+        {% for m in team %}
+        <option value="{{ m.id }}" {% if step and step.default_assignee_id == m.id %}selected{% endif %}>
+          {{ m.name }} ({{ m.id }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Est. minutes</label>
+      <input type="number" name="est_minutes" min="0"
+             value="{{ step.est_minutes or '' if step else '' }}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+    </div>
+    <div class="flex items-end">
+      <label class="inline-flex items-center text-sm">
+        <input type="checkbox" name="checkpoint" {% if step and step.checkpoint %}checked{% endif %}/>
+        <span class="ml-2">Checkpoint (requires explicit approval)</span>
+      </label>
+    </div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Depends on (comma-separated step IDs)</label>
+    <input type="text" name="depends_on"
+           value="{{ step.depends_on | join(', ') if step else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"/>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Instructions (markdown)</label>
+    <textarea name="instructions_md" rows="10"
+              class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono">{{ step.instructions_md if step else '' }}</textarea>
+  </div>
+  <div class="pt-2">
+    <button type="submit"
+            class="bg-slate-900 text-white text-sm rounded px-4 py-2 hover:bg-slate-700">
+      {% if is_new %}Add step{% else %}Save{% endif %}
+    </button>
+  </div>
+</form>
+{% endblock %}

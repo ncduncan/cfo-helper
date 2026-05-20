@@ -1,0 +1,53 @@
+name: mor
+title_template: "MOR — {period}"
+description: |
+  Management Operating Review due LCD+10 (business days for non-quarter
+  months, calendar days for quarter-end months — see CLAUDE.md §9).
+  FP&A team owns; Reporting assembles the document, FP&A drives the
+  variance narrative, Commercial supplies deal-level color when
+  material. CFO presents.
+
+  Output format: PowerPoint deck, 16:9. Built via:
+    python -m scripts.pptx mor --spec <deck_spec.json> --output <mor.pptx>
+
+  The deck_spec.json conforms to scripts.pptx.mor.MORPayload. Reporting
+  agent assembles the spec from upstream work_product.json files plus
+  chart artifacts produced via scripts.charts (rendered separately).
+output:
+  format: pptx
+  builder: scripts.pptx.mor
+  cli: "python -m scripts.pptx mor --spec {spec_path} --output {output_path}"
+  spec_class: scripts.pptx.mor.MORPayload
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Reporting period (YYYY-MM)" }
+  - { field: close_pack_path, type: path, required: true,
+      label: "Path to final close pack for the period" }
+  - { field: ceo_letter_path, type: path, required: false,
+      label: "Path to CEO letter (LCD+7) — for narrative consistency" }
+pipeline:
+  - phase: P1
+    agent: reporting
+    kind: narrative_with_python_assembly
+    may_consult: [fpa, commercial]
+    instructions: |
+      Assemble the MOR deck by:
+      1. Reading tasks/close-<period>/outputs/{controller,fpa,commercial}/work_product.json
+         and the close pack to source figures.
+      2. Producing chart images via scripts.charts (use the CLI: python -m
+         scripts.charts --spec <chart_spec.json> --output <png>). Required charts:
+         arr_snapshot, bbrr_waterfall, top10_movement, deferred_rev_rollforward,
+         kpi_dashboard_grid.
+      3. Authoring the deck spec at outputs/reporting/deck_spec.json — populate
+         every section per CLAUDE.md §6 (headline, ARR, BBRR, top-10, product
+         P&L, variance commentary, cash, KPI dashboard, parent recon, open items).
+      4. Building the deck:
+         python -m scripts.pptx mor --spec outputs/reporting/deck_spec.json \
+             --output outputs/reporting/artifacts/mor.pptx
+      5. Stamping every slide that quotes a number with claim_id references in
+         the speaker-notes pane (the templates module handles this if you
+         populate the *_claim_ids fields on the payload).
+  - phase: P2
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_reviewer

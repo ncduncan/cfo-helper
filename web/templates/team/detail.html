@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ member.name }} — Team{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold">{{ member.name }}</h1>
+    <div class="text-sm text-slate-500 font-mono">{{ member.id }}</div>
+  </div>
+  <div class="flex gap-2">
+    <a href="/team" class="text-sm text-slate-600 hover:underline">← Team</a>
+    <a href="/team/{{ member.id }}/edit"
+       class="bg-slate-900 text-white text-sm rounded px-3 py-1.5 hover:bg-slate-700">Edit</a>
+  </div>
+</div>
+
+<div class="bg-white rounded border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+  <div>
+    <div class="text-slate-500 mb-1">Kind</div>
+    <div>
+      {% if member.kind == "ai" %}
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">AI</span>
+      {% else %}
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-700">Human</span>
+      {% endif %}
+    </div>
+  </div>
+  <div>
+    <div class="text-slate-500 mb-1">Email</div>
+    <div>{{ member.email or "—" }}</div>
+  </div>
+  <div>
+    <div class="text-slate-500 mb-1">Roles</div>
+    <div>
+      {% for t in member.role_tags %}
+        <span class="inline-block bg-slate-100 text-slate-700 rounded px-1.5 py-0.5 mr-1 font-mono text-xs">{{ t }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <div class="text-slate-500 mb-1">Status</div>
+    <div>{% if member.active %}Active{% else %}Inactive{% endif %}</div>
+  </div>
+  <div>
+    <div class="text-slate-500 mb-1">Created</div>
+    <div class="text-xs">{{ member.created_at }}</div>
+  </div>
+</div>
+{% endblock %}

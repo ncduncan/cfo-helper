@@ -1,0 +1,20 @@
+# {{ period }} Close — Executive Summary
+
+## Headline
+
+- Revenue: ${{ "{:,.0f}".format(revenue) }} `[claim: {{ revenue_claim }}]`
+- Opex: ${{ "{:,.0f}".format(opex) }} `[claim: {{ opex_claim }}]`
+- Material variances vs. budget: {{ material_variance_count }}
+
+## Variance commentary
+
+_(FP&A's narrative is folded in here at P3. Each numeric assertion carries `[claim: ...]`.)_
+
+## Outlook
+
+_(One paragraph on the next 1–2 months, anchored to forecast variance and known commercial events.)_
+
+## Notes
+
+- Recurring items observed this period: _(filled at P5 from `memory/recurring_items.md` matches.)_
+- Open items routed to next close: _(any unresolved `open_questions` flagged for follow-up.)_

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}New task{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <h1 class="text-2xl font-semibold">New task</h1>
+  <a href="/tasks" class="text-sm text-slate-600 hover:underline">cancel</a>
+</div>
+
+<form action="/tasks/new" method="post"
+      class="bg-white rounded border border-slate-200 p-6 max-w-2xl space-y-4">
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Standard work template</label>
+    <select name="standard_work_id" required
+            class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+      {% for sw in sw_list %}
+      <option value="{{ sw.id }}">{{ sw.name }} ({{ sw.id }})</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Period (optional)</label>
+    <input type="text" name="period"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"
+           placeholder="2026-05"/>
+    <div class="text-xs text-slate-500 mt-1">Free text; appended to the title.</div>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Title override (optional)</label>
+    <input type="text" name="title"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Owner override (optional)</label>
+    <select name="owner_id"
+            class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+      <option value="">(use template's owner_role)</option>
+      {% for m in team %}<option value="{{ m.id }}">{{ m.name }} ({{ m.id }})</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Due date override (ISO)</label>
+    <input type="text" name="due_date"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"
+           placeholder="2026-05-20T17:00:00+00:00"/>
+  </div>
+  <div class="pt-2">
+    <button type="submit"
+            class="bg-slate-900 text-white text-sm rounded px-4 py-2 hover:bg-slate-700">
+      Create task
+    </button>
+  </div>
+</form>
+{% endblock %}

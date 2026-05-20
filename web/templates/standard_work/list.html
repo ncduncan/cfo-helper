@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Standard Work — CFO Helper{% endblock %}
+{% block content %}
+<div class="flex items-baseline justify-between mb-4">
+  <div>
+    <h1 class="text-2xl font-semibold">Standard Work</h1>
+    <p class="text-slate-600 text-sm">
+      Templates that define how recurring work runs. Each template is an
+      ordered list of steps; a Task is an instance of a template.
+    </p>
+  </div>
+  <a href="/standard-work/new"
+     class="bg-slate-900 text-white text-sm rounded px-3 py-1.5 hover:bg-slate-700">
+    + New template
+  </a>
+</div>
+
+{% include "standard_work/_list_table.html" %}
+{% endblock %}

@@ -1,0 +1,52 @@
+<div id="sw-table-wrap"
+     hx-get="/standard-work/fragments/list"
+     hx-trigger="db-changed:standard_work from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  {% if not items %}
+    <div class="p-4 rounded border border-slate-200 bg-white text-slate-600 text-sm">
+      No standard work templates yet. <a href="/standard-work/new" class="text-sky-700 hover:underline">Create one</a>
+      or run <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">python -m scripts.seed_standard_work</code>
+      to import the 17 templates from <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">task_types/</code>.
+    </div>
+  {% else %}
+  <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+        <tr>
+          <th class="text-left px-4 py-2">Name</th>
+          <th class="text-left px-4 py-2">Owner role</th>
+          <th class="text-left px-4 py-2">Cadence</th>
+          <th class="text-left px-4 py-2">Steps</th>
+          <th class="text-left px-4 py-2">Due offset</th>
+          <th class="text-right px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for sw in items %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2">
+            <a href="/standard-work/{{ sw.id }}" class="font-medium text-slate-900 hover:underline">
+              {{ sw.name }}
+            </a>
+            <div class="text-xs text-slate-500 font-mono">{{ sw.id }}</div>
+          </td>
+          <td class="px-4 py-2 font-mono text-xs text-slate-700">{{ sw.owner_role }}</td>
+          <td class="px-4 py-2 text-xs text-slate-600">{{ sw.cadence or "—" }}</td>
+          <td class="px-4 py-2 text-xs">{{ (sw.steps or []) | length }}</td>
+          <td class="px-4 py-2 text-xs">{{ sw.due_offset_days }} d</td>
+          <td class="px-4 py-2 text-right text-xs">
+            <a href="/standard-work/{{ sw.id }}/edit" class="text-sky-700 hover:underline mr-3">edit</a>
+            <form action="/standard-work/{{ sw.id }}/delete" method="post" class="inline">
+              <button type="submit"
+                      onclick="return confirm('Delete {{ sw.name }}? Existing tasks will keep their step copies.')"
+                      class="text-rose-700 hover:underline">delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>

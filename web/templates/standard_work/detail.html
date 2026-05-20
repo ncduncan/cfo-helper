@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }} — Standard Work{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold">{{ item.name }}</h1>
+    <div class="text-sm text-slate-500 font-mono">{{ item.id }}</div>
+  </div>
+  <div class="flex gap-2">
+    <a href="/standard-work" class="text-sm text-slate-600 hover:underline">← Standard Work</a>
+    <a href="/standard-work/{{ item.id }}/edit"
+       class="bg-slate-900 text-white text-sm rounded px-3 py-1.5 hover:bg-slate-700">Edit header</a>
+  </div>
+</div>
+
+<div class="bg-white rounded border border-slate-200 p-6 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+  <div><div class="text-slate-500 mb-1">Owner role</div><div class="font-mono">{{ item.owner_role }}</div></div>
+  <div><div class="text-slate-500 mb-1">Cadence</div><div>{{ item.cadence or "—" }}</div></div>
+  <div><div class="text-slate-500 mb-1">Due offset</div><div>{{ item.due_offset_days }} day(s)</div></div>
+  <div><div class="text-slate-500 mb-1">Source task type</div><div class="text-xs font-mono">{{ item.source_task_type or "—" }}</div></div>
+</div>
+
+{% if item.context_md %}
+<div class="bg-white rounded border border-slate-200 p-6 mb-6">
+  <h2 class="text-lg font-semibold mb-2">Context</h2>
+  <pre class="text-sm whitespace-pre-wrap text-slate-700">{{ item.context_md }}</pre>
+</div>
+{% endif %}
+
+{% if item.requirements_md %}
+<div class="bg-white rounded border border-slate-200 p-6 mb-6">
+  <h2 class="text-lg font-semibold mb-2">Requirements</h2>
+  <pre class="text-sm whitespace-pre-wrap text-slate-700">{{ item.requirements_md }}</pre>
+</div>
+{% endif %}
+
+<div class="flex items-baseline justify-between mb-2">
+  <h2 class="text-lg font-semibold">Steps ({{ (item.steps or []) | length }})</h2>
+  <a href="/standard-work/{{ item.id }}/steps/new"
+     class="text-sm text-sky-700 hover:underline">+ Add step</a>
+</div>
+
+<div class="overflow-x-auto rounded border border-slate-200 bg-white">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-2">#</th>
+        <th class="text-left px-4 py-2">Step</th>
+        <th class="text-left px-4 py-2">Owner role</th>
+        <th class="text-left px-4 py-2">Default assignee</th>
+        <th class="text-left px-4 py-2">Kind</th>
+        <th class="text-left px-4 py-2">Depends on</th>
+        <th class="text-left px-4 py-2">Est</th>
+        <th class="text-right px-4 py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for s in item.steps or [] %}
+      <tr class="hover:bg-slate-50">
+        <td class="px-4 py-2 text-xs text-slate-500">{{ loop.index }}</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">{{ s.name }}</div>
+          <div class="text-xs text-slate-500 font-mono">{{ s.id }}{% if s.checkpoint %} · checkpoint{% endif %}</div>
+        </td>
+        <td class="px-4 py-2 font-mono text-xs">{{ s.owner_role }}</td>
+        <td class="px-4 py-2 text-xs">{{ s.default_assignee_id or "—" }}</td>
+        <td class="px-4 py-2">
+          {% if s.kind == "ai" %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">AI</span>
+          {% else %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-700">Human</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-2 text-xs">
+          {% for d in s.depends_on or [] %}<span class="font-mono">{{ d }}</span>{% if not loop.last %}, {% endif %}{% endfor %}
+        </td>
+        <td class="px-4 py-2 text-xs text-slate-600">{% if s.est_minutes %}{{ s.est_minutes }}m{% else %}—{% endif %}</td>
+        <td class="px-4 py-2 text-right text-xs">
+          <a href="/standard-work/{{ item.id }}/steps/{{ s.id }}/edit"
+             class="text-sky-700 hover:underline mr-3">edit</a>
+          <form action="/standard-work/{{ item.id }}/steps/{{ s.id }}/delete" method="post" class="inline">
+            <button type="submit"
+                    onclick="return confirm('Delete step {{ s.name }}?')"
+                    class="text-rose-700 hover:underline">delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

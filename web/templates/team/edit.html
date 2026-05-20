@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New member{% else %}Edit {{ member.name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-baseline justify-between">
+  <h1 class="text-2xl font-semibold">
+    {% if is_new %}New team member{% else %}Edit {{ member.name }}{% endif %}
+  </h1>
+  <a href="{% if is_new %}/team{% else %}/team/{{ member.id }}{% endif %}"
+     class="text-sm text-slate-600 hover:underline">cancel</a>
+</div>
+
+<form action="{% if is_new %}/team{% else %}/team/{{ member.id }}{% endif %}"
+      method="post"
+      class="bg-white rounded border border-slate-200 p-6 max-w-2xl space-y-4">
+  {% if is_new %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">ID</label>
+    <input type="text" name="id" required
+           pattern="[a-z0-9][a-z0-9_-]*" maxlength="64"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+           placeholder="alice_smith"/>
+    <div class="text-xs text-slate-500 mt-1">Lowercase, digits, dash, underscore. Immutable.</div>
+  </div>
+  {% endif %}
+
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+    <input type="text" name="name" required maxlength="120"
+           value="{{ member.name if member else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+    <input type="email" name="email"
+           value="{{ member.email or '' if member else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+  </div>
+
+  {% if is_new %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Kind</label>
+    <select name="kind" required class="border border-slate-300 rounded px-3 py-1.5 text-sm">
+      <option value="human">Human</option>
+      <option value="ai">AI (Forge-like)</option>
+    </select>
+    <div class="text-xs text-slate-500 mt-1">Immutable after creation.</div>
+  </div>
+  {% else %}
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Kind</label>
+    <div class="text-sm text-slate-700">
+      {{ member.kind }}
+      {% if is_forge %}<span class="text-xs text-slate-500 ml-2">(locked)</span>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div>
+    <label class="block text-sm font-medium text-slate-700 mb-1">Role tags (comma-separated)</label>
+    <input type="text" name="role_tags"
+           value="{{ member.role_tags | join(', ') if member else '' }}"
+           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+           placeholder="controller, fpa, cfo"/>
+    <div class="text-xs text-slate-500 mt-1">
+      Used to auto-assign standard-work steps whose owner_role matches a tag.
+    </div>
+  </div>
+
+  <div class="pt-2">
+    <button type="submit"
+            class="bg-slate-900 text-white text-sm rounded px-4 py-2 hover:bg-slate-700">
+      {% if is_new %}Create{% else %}Save{% endif %}
+    </button>
+  </div>
+</form>
+{% endblock %}

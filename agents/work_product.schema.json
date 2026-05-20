@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cfo-helper/agents/work_product.schema.json",
+  "title": "Agent Work Product",
+  "description": "Structured output every agent emits. Every numeric claim must trace to source. Downstream agents read this to extract values without re-deriving them.",
+  "type": "object",
+  "required": ["agent", "period", "phase", "produced_at", "status", "claims", "artifacts", "self_checks"],
+  "additionalProperties": false,
+  "properties": {
+    "agent": {
+      "type": "string",
+      "enum": ["coordinator", "controller", "fpa", "commercial", "reporting", "reviewer"]
+    },
+    "period": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}$",
+      "description": "Close period in YYYY-MM"
+    },
+    "phase": {
+      "type": "string",
+      "pattern": "^P\\d+$"
+    },
+    "produced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready_for_checkpoint", "approved", "rejected", "superseded"]
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-paragraph plain-English summary of what this work product contains. Used by Coordinator for checkpoint briefings."
+    },
+    "claims": {
+      "type": "array",
+      "description": "Every numeric claim asserted by this agent. Each must have provenance. Downstream agents reference claims by id.",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Files produced by this agent (Excel, CSV, parquet, etc.) referenced from claims.",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "self_checks": {
+      "type": "array",
+      "description": "Mandatory checklist results. Every entry must have a pass/fail outcome.",
+      "items": { "$ref": "#/$defs/self_check" }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "Items the agent could not resolve and is escalating to Coordinator/CFO.",
+      "items": { "$ref": "#/$defs/open_question" }
+    },
+    "requests": {
+      "type": "array",
+      "description": "Requests for other agents (e.g., FP&A asking Commercial for a specialist evidence pack). Coordinator routes these.",
+      "items": { "$ref": "#/$defs/request" }
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "required": ["id", "label", "value", "units", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.]+$",
+          "description": "Stable identifier, dot-namespaced (e.g., 'controller.consolidated.revenue_total')"
+        },
+        "label": { "type": "string" },
+        "value": { "type": ["number", "string"] },
+        "units": {
+          "type": "string",
+          "description": "USD, USD_thousands, pct, count, headcount, etc."
+        },
+        "period": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+        "entity": { "type": "string" },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "default": "high"
+        },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "notes": { "type": "string" }
+      }
+    },
+    "provenance": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "workbook", "sheet"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "source_cell" },
+            "workbook": { "type": "string", "description": "Path relative to tasks/close-<period>/inputs/ or absolute" },
+            "sheet": { "type": "string" },
+            "range": { "type": "string", "description": "A1-style cell or range" },
+            "as_of": { "type": "string", "format": "date-time" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "script", "inputs", "formula"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "computed" },
+            "script": { "type": "string", "description": "Path to the script that computed this value" },
+            "inputs": {
+              "type": "array",
+              "description": "Other claim ids consumed to produce this value",
+              "items": { "type": "string" }
+            },
+            "formula": { "type": "string", "description": "Plain-English or pseudocode formula" },
+            "ran_at": { "type": "string", "format": "date-time" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "connector", "call"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "connector" },
+            "connector": { "type": "string", "description": "e.g., 'excel', 'erp_stub'" },
+            "call": { "type": "string", "description": "e.g., \"get_gl(period='2026-05', entity='UK')\"" },
+            "as_of": { "type": "string", "format": "date-time" }
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "path", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "path": { "type": "string", "description": "Path relative to workspace root" },
+        "kind": {
+          "type": "string",
+          "enum": ["xlsx", "csv", "parquet", "json", "md", "png", "pdf", "duckdb"]
+        },
+        "description": { "type": "string" },
+        "claim_ids": {
+          "type": "array",
+          "description": "Claims this artifact backs",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "self_check": {
+      "type": "object",
+      "required": ["id", "name", "outcome"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "outcome": {
+          "type": "string",
+          "enum": ["pass", "fail", "warn", "n/a"]
+        },
+        "expected": { "type": ["number", "string", "null"] },
+        "actual": { "type": ["number", "string", "null"] },
+        "tolerance": { "type": ["number", "string", "null"] },
+        "evidence_path": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "open_question": {
+      "type": "object",
+      "required": ["id", "question"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "question": { "type": "string" },
+        "blocks_phase": { "type": "boolean", "default": false },
+        "context": { "type": "string" }
+      }
+    },
+    "request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Cross-agent routing request. Coordinator routes to the named agent.",
+          "required": ["id", "to_agent", "ask"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string" },
+            "to_agent": {
+              "type": "string",
+              "enum": ["controller", "fpa", "commercial", "reporting", "reviewer"]
+            },
+            "ask": { "type": "string" },
+            "deadline": { "type": "string", "description": "ISO date or 'this_phase'" },
+            "context_claims": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Memory write proposal. Coordinator stages via propose_memory_write; CFO approves at the dashboard before finalize.",
+          "required": ["kind", "target", "content", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "memory_write" },
+            "target": {
+              "type": "string",
+              "description": "Repo-relative path to the memory file (e.g. memory/recurring_items.md)"
+            },
+            "content": {
+              "type": "string",
+              "description": "Full replacement content to write to the target file."
+            },
+            "reason": {
+              "type": "string",
+              "description": "Plain-English explanation of why this memory update is needed."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

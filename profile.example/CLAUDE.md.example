@@ -1,0 +1,198 @@
+# profile/CLAUDE.md — Your business context
+
+> Private file. Gitignored. Layered on top of the framework `CLAUDE.md` at
+> the repo root. AI assistants read both: the root file gives them the
+> framework rules; this file gives them your business — who the user is,
+> what the company sells, who the customers are, what the accounting
+> policies are, which KPIs matter, how variance commentary should read.
+
+Replace each `[bracketed placeholder]` below with your own content. The
+[onboarding skill](../.claude/skills/onboarding/SKILL.md) does this
+interactively if you'd rather not edit by hand.
+
+---
+
+## 1. Who the user is
+
+[CFO name], CFO of **[Company Name]** — [one paragraph on what the
+company is]. Approx. **[revenue scale]** revenue. [Reports up into parent
+segment? — or standalone].
+
+When in doubt about audience: write for a CFO who needs board-grade
+precision and traceability, not a startup operator who wants directional
+answers.
+
+---
+
+## 2. Business context — what this company sells, to whom
+
+[One paragraph describing the business: what you sell, to whom,
+distinguishing characteristics of the customer base, geographic footprint.]
+
+**Product portfolio:**
+
+| Suite | Products | What it does |
+|---|---|---|
+| **[Suite A]** | [Product A1, Product A2, …] | [one-line description] |
+| **[Suite B]** | [Product B1, …] | […] |
+| **[Suite C]** | […] | […] |
+
+**Scale signals (publicly disclosed if any):**
+- [metric 1 — e.g., customers on platform]
+- [metric 2 — e.g., users active]
+- [metric 3 — e.g., transactions processed]
+
+**Customer archetypes (treat each differently in commentary):**
+
+1. **[Archetype A]** — [one-line description and what drives this segment].
+2. **[Archetype B]** — […]
+3. **[Archetype C]** — […]
+4. **[Archetype D — optional]** — […]
+5. **[Archetype E — optional]** — […]
+6. **[Archetype F — optional]** — […]
+
+**Pricing models you'll see in the data:**
+- [Model 1 — e.g., per-seat annual subscription]
+- [Model 2 — e.g., usage-based metering]
+- [Model 3 — e.g., multi-year prepay]
+- [Model 4 — e.g., bundled with a larger services agreement]
+
+---
+
+## 3. Competitive landscape (use when explaining wins/losses or pricing variance)
+
+| Competitor | Their product | Where they overlap |
+|---|---|---|
+| **[Competitor A]** | [their product] | [overlap description] |
+| **[Competitor B]** | [their product] | [overlap description] |
+| **[Competitor C]** | [their product] | [overlap description] |
+
+When FP&A drafts variance commentary on a customer loss/win, name the
+likely competitor explicitly if context supports it.
+
+---
+
+## 4. Industry-specific accounting and finance considerations
+
+Bake these into self-checks and Reviewer's audit posture:
+
+### Revenue recognition (ASC 606)
+- **Subscription / SaaS**: ratable over the service period.
+- **Usage-based**: recognize as the usage occurs.
+- **Implementation / professional services**: assess whether distinct from
+  the SaaS — typically bundled and recognized over the larger performance
+  obligation period unless customer has alternative use; allocation via SSP.
+- **Multi-year prepays** (if applicable): large deferred revenue balance;
+  track the rollforward (additions, recognition, FX, reclasses) every
+  month — Reviewer should reconcile end-of-period deferred to billings
+  minus recognized revenue.
+- **[Industry-specific revenue topic — e.g., bundled allocations]**:
+  [your business's high-error territory; mark as `open_question` for the
+  CFO at P1].
+
+### Cost recognition / capitalization
+- **Internal-use software** (platform, infra): ASC 350-40 — capitalize
+  during application development stage.
+- **Software products sold to customers** (if applicable): ASC 985-20 —
+  capitalize after technological feasibility.
+- **Capitalized commissions** (ASC 340-40 / Topic 606): amortize over the
+  expected customer life.
+
+### Cash & working capital
+- [If multi-year prepays are material: track billings and RPO alongside
+  revenue]
+- [DSO commentary specific to the customer base]
+
+### Currency
+- Material exposure: [list currencies].
+- Use the FX rates in the connector's `fx` table; period-average for P&L,
+  period-end for BS.
+
+### Parent reporting alignment (if applicable)
+- Internal close timing must support [parent name] parent close calendar.
+- Account map must reconcile to [parent name]'s chart of accounts.
+- SOX in scope — control documentation matters.
+
+---
+
+## 5. KPIs the agents should produce by default
+
+Reporting and FP&A should always include the following in any monthly close
+pack, even when CFO didn't ask:
+
+| KPI | Definition | Source |
+|---|---|---|
+| **ARR** (closing) | Annualized run-rate of in-force subscriptions | derive from billings + active contracts |
+| **NRR** | (Beginning ARR cohort + expansion − contraction − churn) / Beginning ARR | cohort schedule |
+| **GRR** | NRR excluding expansion | cohort schedule |
+| **Logo retention** | % of customers retained MoM | customers table |
+| **ACV by archetype** | mean ACV grouped by archetype | deals |
+| **Bookings / Billings / RPO / Revenue waterfall** | four-way reconciliation | controller + variance |
+| **Top-10 customer concentration** | top-10 ARR / total ARR | customers |
+| **FX-neutral revenue growth** | revenue in constant currency vs. PY | controller + fx |
+| **[Business-specific KPI 1]** | [definition] | [source] |
+| **[Business-specific KPI 2]** | [definition] | [source] |
+
+When data isn't available for a KPI, the agent must produce the metric
+with a `low` confidence flag and an `open_question`, not skip it.
+
+---
+
+## 6. How agents should tailor analysis (specific to this business)
+
+### Variance commentary (FP&A)
+
+When explaining a revenue variance, structure the explanation by
+**archetype × product**, e.g.:
+
+> Subscription Revenue is **$X under budget**. The shortfall sits in
+> [Archetype A] ([Product line]): [Customer 1]'s contract started later
+> than planned (~$Y timing), and [Customer 2]'s expansion slipped to next
+> quarter (~$Z). [Other segments] tracked to plan. _[claim: …]_
+
+Always anchor in:
+- **Customer archetype**
+- **Product line**
+- **Mechanism** (timing, scope reduction, churn, FX, deferred recognition)
+
+Recurring patterns to expect:
+- [Pattern 1 — e.g., Q4 seasonality]
+- [Pattern 2 — e.g., transactional spikes]
+- [Pattern 3 — e.g., bundle allocation timing]
+
+### Reporting (close pack)
+
+Default sections in `final/exec_summary.md`:
+
+1. Headline P&L with FX-neutral comparators.
+2. ARR snapshot + NRR/GRR.
+3. Bookings / Billings / RPO / Revenue waterfall.
+4. Top-10 customer movement.
+5. Product-line P&L.
+6. Variance commentary (archetype × product, as above).
+7. Cash & working capital.
+8. KPI dashboard.
+9. [Parent-reporting reconciliation if applicable].
+10. Open items routed to next close.
+
+### Reviewer
+
+Beyond universal tie-outs, additionally:
+- Verify deferred revenue rollforward.
+- Verify capitalized R&D additions.
+- Sample 2–3 multi-year deals; verify SSP allocation hasn't drifted.
+- Confirm FX rates used match a recognized source.
+
+---
+
+## 7. Memory hygiene for this business
+
+`profile/memory/recurring_items.md` should accumulate entries like:
+
+- [Recurring pattern 1]
+- [Recurring pattern 2]
+- [Annual price-increase realization pattern]
+
+`profile/memory/account_map.json` must [reconcile to parent chart if
+applicable]. When a new account appears, the onboarding skill proposes
+the canonical mapping.

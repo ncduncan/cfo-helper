@@ -1,0 +1,139 @@
+{
+  "_doc": "Pinned manifest for github.com/anthropics/financial-services SKILL.md files we adapted into .claude/skills/. Updated only by tooling_freshness_review after CFO sign-off. Parallel to memory/upstream_skills_pin.json (which tracks anthropics/skills patterns adapted into scripts/).",
+  "upstream_repo": "anthropics/financial-services",
+  "pinned_at": "2026-05-07",
+  "considered_upstream_skills": [
+    {
+      "name": "nav-tieout",
+      "decision": "not relevant \u2014 fund-admin LP capital-account tie-out, not applicable to a SaaS finance team",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "xlsx-author",
+      "decision": "not relevant \u2014 scripts/xlsx/ already covers headless authoring with claim_id provenance, blue/black/green coding, builders for BSR/MOR/parent FP&A report-out",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "pptx-author",
+      "decision": "not relevant \u2014 scripts/pptx/ already covers headless authoring with claim_id speaker-notes stamping and the four primary deck builders",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "deck-refresh",
+      "decision": "not relevant \u2014 our model is regenerate-from-claims (cleaner provenance), not in-place refresh of an existing deck",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "clean-data-xls",
+      "decision": "not relevant \u2014 our ingest is deterministic from connectors, not interactive cleaning of user-provided sheets",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "ppt-template-creator",
+      "decision": "deferred \u2014 meta-skill for creating template skills from a .pptx file; reconsider if a parent-branded template is shipped we need to wrap",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "skill-creator",
+      "decision": "not relevant \u2014 we use superpowers:writing-skills",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "3-statement-model",
+      "decision": "not relevant \u2014 equity-research/IB workflow, we don't model equities",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "comps-analysis",
+      "decision": "not relevant \u2014 equity-research/IB",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "dcf-model",
+      "decision": "not relevant \u2014 equity-research/IB",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "lbo-model",
+      "decision": "not relevant \u2014 equity-research/IB",
+      "date": "2026-05-07"
+    },
+    {
+      "name": "competitive-analysis",
+      "decision": "not relevant \u2014 IB/equity-research framing; our competitive context is captured in CLAUDE.md \u00a73 and in variance-commentary-structure",
+      "date": "2026-05-07"
+    }
+  ],
+  "skills": {
+    "audit-xls": {
+      "upstream_path": "plugins/vertical-plugins/financial-analysis/skills/audit-xls/SKILL.md",
+      "our_local_files": [
+        ".claude/skills/audit-xls/SKILL.md"
+      ],
+      "pinned_date": "2026-05-07",
+      "tracked_files": [
+        "plugins/vertical-plugins/financial-analysis/skills/audit-xls/SKILL.md"
+      ],
+      "pinned_file_commits": {
+        "plugins/vertical-plugins/financial-analysis/skills/audit-xls/SKILL.md": "a2cae1d11c5e6704b95623a0ffeec8863ef1b8c2"
+      },
+      "notes": "Adapted: dropped IB/DCF/LBO model-type-specific bug lists; kept BS-balance / cash-tieout / formula-error / hardcode-detection / roll-forward integrity checks; tied severity to materiality.yaml; output integrates with review/findings.json. Scope locked to outputs/reporting/artifacts/close_pack.xlsx."
+    },
+    "accrual-schedule": {
+      "upstream_path": "plugins/vertical-plugins/fund-admin/skills/accrual-schedule/SKILL.md",
+      "our_local_files": [
+        ".claude/skills/accrual-schedule/SKILL.md"
+      ],
+      "pinned_date": "2026-05-07",
+      "tracked_files": [
+        "plugins/vertical-plugins/fund-admin/skills/accrual-schedule/SKILL.md"
+      ],
+      "pinned_file_commits": {
+        "plugins/vertical-plugins/fund-admin/skills/accrual-schedule/SKILL.md": "c3e4f50d98906c189b685836e6605b0df33517fe"
+      },
+      "notes": "Adapted: policy list inputs from memory/accrual_policy.yaml; engine-MSA-bundled accruals get explicit open_question per CLAUDE.md \u00a74; emits per-accrual claims; draft-only, never posts. Self-check 7 (accruals_consistent_with_policy) returns n_a until policy is populated."
+    },
+    "break-trace": {
+      "upstream_path": "plugins/vertical-plugins/fund-admin/skills/break-trace/SKILL.md",
+      "our_local_files": [
+        ".claude/skills/break-trace/SKILL.md"
+      ],
+      "pinned_date": "2026-05-07",
+      "tracked_files": [
+        "plugins/vertical-plugins/fund-admin/skills/break-trace/SKILL.md"
+      ],
+      "pinned_file_commits": {
+        "plugins/vertical-plugins/fund-admin/skills/break-trace/SKILL.md": "8cdc7bce57111845dd9a1c2d303afb9e0bc708ef"
+      },
+      "notes": "Adapted: buckets are GL-internal (intercompany, sum-of-entities, parent-chart, FX-rate-source) plus subledger when gl-recon is live; owner enum extended with parent-chart and escalate-cfo; defers to parent-chart-reconciliation and deferred-rev-rollforward where applicable."
+    },
+    "gl-recon": {
+      "upstream_path": "plugins/vertical-plugins/fund-admin/skills/gl-recon/SKILL.md",
+      "our_local_files": [
+        ".claude/skills/gl-recon/SKILL.md"
+      ],
+      "pinned_date": "2026-05-07",
+      "tracked_files": [
+        "plugins/vertical-plugins/fund-admin/skills/gl-recon/SKILL.md"
+      ],
+      "pinned_file_commits": {
+        "plugins/vertical-plugins/fund-admin/skills/gl-recon/SKILL.md": "d97da4cb0cb78186ac5c9ea1edfe704bac9fa1eb"
+      },
+      "notes": "Adapted for the SaaS subledger feed (forthcoming): keyset is customer_id+product_line+posting_period (or tail_number+transaction_id for records-transfer transactions); SaaS-specific buckets (recognition-period-break) and causes (ssp_allocation_drift, long_term_services_bundle_alloc, prepay_recognition) added. Skill on the shelf until subledger connector lands; tolerance field defaults null in materiality.yaml."
+    },
+    "audit-pptx": {
+      "upstream_path": "plugins/vertical-plugins/financial-analysis/skills/ib-check-deck/SKILL.md",
+      "our_local_files": [
+        ".claude/skills/audit-pptx/SKILL.md"
+      ],
+      "pinned_date": "2026-05-07",
+      "tracked_files": [
+        "plugins/vertical-plugins/financial-analysis/skills/ib-check-deck/SKILL.md"
+      ],
+      "pinned_file_commits": {
+        "plugins/vertical-plugins/financial-analysis/skills/ib-check-deck/SKILL.md": "a9a1b59c5e2ed37eccfa4bb1fe2e5b4aa4a71730"
+      },
+      "notes": "Adapted from ib-check-deck; dropped IB-specific language polish (we have writing-style for voice). Kept four QC dimensions: number consistency across slides, claim_id-in-speaker-notes verification, narrative-data alignment, source citations + formatting hygiene. Scope: MOR / BSR / parent-FP&A-reportout decks. Reuses scripts/pptx/templates.py speaker-notes claim_id stamping pattern."
+    }
+  }
+}

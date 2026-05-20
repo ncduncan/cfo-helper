@@ -1,0 +1,18 @@
+name: reforecast
+title_template: "Reforecast — {forecast_horizon} (vintage {vintage})"
+description: |
+  Update the rolling forecast using latest actuals plus commercial signals.
+  Lighter than month-end close; 4 phases.
+brief_schema:
+  - { field: vintage, type: text, required: true, label: "Forecast vintage label (e.g., v4)" }
+  - { field: forecast_horizon, type: text, required: true, label: "Horizon (e.g., 'Q3 2026 - Q2 2027')" }
+  - { field: period, type: month, required: true, label: "Actuals through (YYYY-MM)" }
+  - { field: drivers_to_revisit, type: markdown, label: "Drivers to revisit" }
+  - { field: notes, type: markdown, label: "Notes" }
+pipeline:
+  - { phase: P1, agent: controller, kind: deterministic,
+      deterministic_runner: scripts.dispatch.run_p1_controller }
+  - { phase: P2, agent: fpa, kind: "deterministic+narrative",
+      may_consult: [commercial] }
+  - { phase: P3, agent: fpa, kind: narrative_with_python_assembly }
+  - { phase: P4, agent: reviewer, kind: "deterministic+narrative" }

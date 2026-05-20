@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Calendar — {{ month_label }}{% endblock %}
+{% block content %}
+<div class="flex items-baseline justify-between mb-4">
+  <h1 class="text-2xl font-semibold">Calendar — {{ month_label }}</h1>
+  <div class="flex gap-2 text-sm items-center">
+    <a href="/calendar?month={{ prev_month }}" class="px-2 py-1 rounded hover:bg-slate-100">Prev</a>
+    <a href="/calendar" class="px-2 py-1 rounded hover:bg-slate-100">Today</a>
+    <a href="/calendar?month={{ next_month }}" class="px-2 py-1 rounded hover:bg-slate-100">Next</a>
+    <a href="/calendar?view=week" class="px-2 py-1 rounded hover:bg-slate-100 ml-3">Week view</a>
+  </div>
+</div>
+{% include "calendar/_grid.html" %}
+{% endblock %}

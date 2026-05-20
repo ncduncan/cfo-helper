@@ -1,0 +1,30 @@
+name: knowledge_refresh
+title_template: "Knowledge refresh — {period}"
+description: |
+  Monthly audit of the accounting/tax knowledge base. Surfaces entries past
+  the 18-month review window, validates frontmatter, and produces a checklist
+  of regulatory updates to verify (FASB ASUs, IRS notices, HMRC guidance,
+  Irish Revenue, OECD).
+
+  This task is fired automatically by a monthly cron via schedules.json. The
+  CFO opens the task in the dashboard and works through the checklist; once
+  all items are checked off, the relevant knowledge files get bumped
+  last_reviewed dates and the task is closed.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Audit period (YYYY-MM)" }
+  - { field: stale_window_months, type: number, required: false,
+      label: "Stale-review threshold (default 18)" }
+pipeline:
+  - phase: P1
+    agent: controller
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p1_kb_audit
+  - phase: P2
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p2_kb_checklist
+  - phase: P4
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_kb_review

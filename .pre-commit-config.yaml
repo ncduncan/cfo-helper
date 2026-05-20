@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: denylist-check
+        name: Block leaks of private/identifying strings
+        entry: python scripts/safety/denylist_check.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]

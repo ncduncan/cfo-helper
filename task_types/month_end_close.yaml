@@ -1,0 +1,21 @@
+name: month_end_close
+title_template: "Month-end close — {period}"
+description: |
+  Standard 5-phase month-end close: consolidate, variance, assemble, review, finalize.
+  CFO checkpoint between every phase.
+brief_schema:
+  - { field: period, type: month, required: true, label: "Close period (YYYY-MM)" }
+  - { field: entities_in_scope, type: multiselect, source: connectors.list_entities, label: "Entities in scope" }
+  - { field: notes, type: markdown, label: "Notes / scope amendments" }
+pipeline:
+  - { phase: P1, agent: controller, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p1_controller }
+  - { phase: P2, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p2_fpa,
+      may_consult: [commercial] }
+  - { phase: P3, agent: reporting, kind: narrative_with_python_assembly,
+      deterministic_runner: scripts.dispatch.run_p3_reporting }
+  - { phase: P4, agent: reviewer, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p4_reviewer }
+  - { phase: P5, agent: coordinator, kind: deterministic,
+      deterministic_runner: scripts.dispatch.run_p5_finalize }

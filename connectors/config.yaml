@@ -1,0 +1,16 @@
+# Domain → backend routing. Override the defaults in connectors/__init__.py.
+# When you add a real ERP/CRM/HRIS, change the relevant line below and create
+# the matching backend module (e.g., connectors/erp.py).
+routing:
+  gl: excel
+  budget: excel
+  forecast: excel
+  customers: excel
+  deals: excel
+  headcount: excel
+  fx: excel
+  # Per-entity subledger flow detail (AP, AR, IBS, ATS, headcount). Read by
+  # the gl-drilldown skill. Always routes to excel today; manifest-driven.
+  subledger: excel
+  # Plan + quarterly outlook assumptions. Append-only by version.
+  assumptions: excel

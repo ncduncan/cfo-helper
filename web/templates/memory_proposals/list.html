@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Memory write proposals — CFO Helper{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <h1 class="text-2xl font-semibold">Memory write proposals</h1>
+  <p class="text-slate-600 text-sm">
+    AI-proposed updates to <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">memory/</code>.
+    Each requires explicit approval before the originating task can complete
+    (CLAUDE.md §8 rule 4).
+  </p>
+</div>
+
+{% if not items %}
+<div class="p-4 rounded border border-slate-200 bg-white text-slate-600 text-sm">
+  No memory write proposals.
+</div>
+{% else %}
+<div class="overflow-x-auto rounded border border-slate-200 bg-white">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-2">Status</th>
+        <th class="text-left px-4 py-2">Task</th>
+        <th class="text-left px-4 py-2">Step</th>
+        <th class="text-left px-4 py-2">Target</th>
+        <th class="text-left px-4 py-2">Operation</th>
+        <th class="text-left px-4 py-2">Detail</th>
+        <th class="text-right px-4 py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for p in items %}
+      <tr class="hover:bg-slate-50">
+        <td class="px-4 py-2 text-xs">
+          {% if p.status == 'pending' %}<span class="text-amber-700">Pending</span>
+          {% elif p.status == 'approved' %}<span class="text-emerald-700">Approved</span>
+          {% elif p.status == 'rejected' %}<span class="text-rose-700">Rejected</span>{% endif %}
+        </td>
+        <td class="px-4 py-2">
+          <a href="/tasks/{{ p.task_id }}" class="hover:underline">{{ p.task_title }}</a>
+          <div class="text-xs text-slate-500 font-mono">{{ p.task_id }}</div>
+        </td>
+        <td class="px-4 py-2 text-xs font-mono">{{ p.step_id }}</td>
+        <td class="px-4 py-2 text-xs font-mono">{{ p.target_path or '—' }}</td>
+        <td class="px-4 py-2 text-xs font-mono">{{ p.operation or '—' }}</td>
+        <td class="px-4 py-2 text-xs">
+          <details>
+            <summary class="cursor-pointer hover:text-slate-900">view</summary>
+            <pre class="mt-1 p-2 bg-slate-50 rounded text-xs whitespace-pre-wrap font-mono">{{ p.payload }}</pre>
+          </details>
+        </td>
+        <td class="px-4 py-2 text-right">
+          {% if p.status == 'pending' %}
+          <form action="/memory-proposals/{{ p.id }}/approve" method="post" class="inline">
+            <button type="submit" class="text-emerald-700 hover:underline mr-3">approve</button>
+          </form>
+          <form action="/memory-proposals/{{ p.id }}/reject" method="post" class="inline">
+            <button type="submit" class="text-rose-700 hover:underline">reject</button>
+          </form>
+          {% else %}
+          <span class="text-xs text-slate-500">{{ p.resolved_at[:19] if p.resolved_at else '' }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

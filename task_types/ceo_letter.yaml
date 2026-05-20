@@ -1,0 +1,47 @@
+name: ceo_letter
+title_template: "CEO letter — {period}"
+description: |
+  CEO letter due LCD+7 (business days for non-quarter months, calendar
+  days for quarter-end months — see CLAUDE.md §9). FP&A team owns;
+  Reporting agent drafts using FP&A's variance content and the final
+  close pack; CFO reviews and signs off.
+
+  Output format: Word doc with a native table sourced from the close pack
+  Excel. Built via:
+    python -m scripts.docx ceo_letter --spec <spec.json> --output <ceo_letter.docx>
+
+  The spec.json conforms to scripts.docx.ceo_letter.CEOLetterPayload.
+  Reporting authors the narrative_md (Markdown) and points table_xlsx_path
+  + table_sheet at the close pack's relevant range.
+output:
+  format: docx
+  builder: scripts.docx.ceo_letter
+  cli: "python -m scripts.docx ceo_letter --spec {spec_path} --output {output_path}"
+  spec_class: scripts.docx.ceo_letter.CEOLetterPayload
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Reporting period (YYYY-MM)" }
+  - { field: close_pack_path, type: path, required: true,
+      label: "Path to final close pack for the period" }
+  - { field: forward_looking_notes, type: markdown, required: false,
+      label: "CFO forward-looking color (optional)" }
+pipeline:
+  - phase: P1
+    agent: reporting
+    kind: narrative_only
+    instructions: |
+      Compose the CEO letter:
+      1. Read tasks/close-<period>/outputs/{controller,fpa}/work_product.json plus
+         final/exec_summary.md for tone and structure consistency.
+      2. Draft the body in Markdown — typically Headlines / Drivers / Outlook
+         sections. Inline every numeric assertion with [claim: <id>] markers.
+      3. Identify the table range in the close pack to embed (typically the
+         P&L sheet; can be variance detail for material periods).
+      4. Author outputs/reporting/letter_spec.json conforming to CEOLetterPayload.
+      5. Build:
+         python -m scripts.docx ceo_letter --spec outputs/reporting/letter_spec.json \
+             --output outputs/reporting/artifacts/ceo_letter.docx
+  - phase: P2
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_reviewer

@@ -1,0 +1,75 @@
+<div id="team-table-wrap"
+     hx-get="/team/fragments/list"
+     hx-trigger="db-changed:team from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  {% if not members %}
+    <div class="p-4 rounded border border-slate-200 bg-white text-slate-600 text-sm">
+      No team members yet. <a href="/team/new" class="text-sky-700 hover:underline">Add one</a>
+      or run <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">python -m scripts.seed_team</code>
+      to bootstrap with Forge + the default roster.
+    </div>
+  {% else %}
+  <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+        <tr>
+          <th class="text-left px-4 py-2">Name</th>
+          <th class="text-left px-4 py-2">Kind</th>
+          <th class="text-left px-4 py-2">Roles</th>
+          <th class="text-left px-4 py-2">Email</th>
+          <th class="text-left px-4 py-2">Status</th>
+          <th class="text-right px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for m in members %}
+        <tr class="hover:bg-slate-50 {% if not m.active %}opacity-60{% endif %}">
+          <td class="px-4 py-2">
+            <a href="/team/{{ m.id }}" class="font-medium text-slate-900 hover:underline">
+              {{ m.name }}
+            </a>
+            <div class="text-xs text-slate-500 font-mono">{{ m.id }}</div>
+          </td>
+          <td class="px-4 py-2">
+            {% if m.kind == "ai" %}
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">AI</span>
+            {% else %}
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-700">Human</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 text-slate-700 text-xs">
+            {% for t in m.role_tags %}
+              <span class="inline-block bg-slate-100 text-slate-700 rounded px-1.5 py-0.5 mr-1 mb-0.5 font-mono">{{ t }}</span>
+            {% endfor %}
+          </td>
+          <td class="px-4 py-2 text-slate-700 text-xs">{{ m.email or "" }}</td>
+          <td class="px-4 py-2">
+            {% if m.active %}
+              <span class="text-xs text-emerald-700">Active</span>
+            {% else %}
+              <span class="text-xs text-slate-500">Inactive</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 text-right">
+            <a href="/team/{{ m.id }}/edit" class="text-sky-700 hover:underline mr-3 text-xs">edit</a>
+            <form action="/team/{{ m.id }}/toggle-active" method="post" class="inline">
+              <button type="submit" class="text-xs text-slate-600 hover:underline mr-3">
+                {% if m.active %}deactivate{% else %}reactivate{% endif %}
+              </button>
+            </form>
+            {% if m.id != "forge" %}
+            <form action="/team/{{ m.id }}/delete" method="post" class="inline">
+              <button type="submit"
+                      onclick="return confirm('Delete {{ m.name }}?')"
+                      class="text-xs text-rose-700 hover:underline">delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>

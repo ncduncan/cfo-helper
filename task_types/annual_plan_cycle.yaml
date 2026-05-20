@@ -1,0 +1,29 @@
+name: annual_plan_cycle
+title_template: "Annual plan FY{fy_year}"
+description: |
+  Annual planning cycle. FP&A submits a bottom-up plan to corporate FP&A in
+  September, receives the locked plan with stretch baked in, ratifies the
+  result, and produces a gap-to-stretch memo characterizing what corporate
+  added. Five phases. CFO sign-off required at P1 (before submission) and
+  P3 (before locking the corporate-stretched plan).
+brief_schema:
+  - { field: fy_year, type: number, required: true, label: "Fiscal year (e.g., 2027)" }
+  - { field: submission_due_date, type: text, required: true, label: "Submission to corporate FP&A (YYYY-MM-DD)" }
+  - { field: driver_workbook_path, type: text, required: true, label: "Path to bottom-up driver workbook" }
+  - { field: revised_workbook_path, type: text, required: false, label: "Path to corporate-stretched driver workbook (P3 input)" }
+  - { field: notes, type: markdown, label: "Notes" }
+pipeline:
+  - { phase: P1, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_plan_build,
+      action: "plan-build bottoms_up_fy{fy_year}; emit trio claims; pause for CFO ratification before submission" }
+  - { phase: P2, agent: fpa, kind: narrative,
+      action: "package submission deck (pptx) + summary memo (docx); record submission_id; manual round-trip with corporate" }
+  - { phase: P3, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_plan_build,
+      action: "plan-build plan_fy{fy_year} with corporate stretch; locked_against=bottoms_up_fy{fy_year}; pause for CFO ratification" }
+  - { phase: P4, agent: fpa, kind: "deterministic+narrative",
+      deterministic_runner: scripts.planning.runners.run_gap,
+      action: "gap-to-stretch bottoms_up_fy{fy_year} → plan_fy{fy_year}; memo names what corporate stretched at trio + bucket + driver grain" }
+  - { phase: P5, agent: reviewer, kind: "deterministic+narrative",
+      deterministic_runner: scripts.dispatch.run_p4_reviewer,
+      action: "sign off: assumption rows hash-locked; trio claims emitted; lineage annotated" }

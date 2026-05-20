@@ -1,0 +1,1 @@
+../../.claude/skills/kpi-pack/SKILL.md

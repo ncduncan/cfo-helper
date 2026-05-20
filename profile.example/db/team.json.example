@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "rows": [
+    {
+      "id": "forge",
+      "name": "Forge",
+      "email": null,
+      "kind": "ai",
+      "role_tags": ["controller", "fpa", "commercial", "reporting", "reviewer", "analyst"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "cfo",
+      "name": "CFO",
+      "email": "cfo@example.com",
+      "kind": "human",
+      "role_tags": ["cfo"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "controller",
+      "name": "Controller",
+      "email": null,
+      "kind": "human",
+      "role_tags": ["controller"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "fpa_manager",
+      "name": "FP&A Manager",
+      "email": null,
+      "kind": "human",
+      "role_tags": ["fpa", "fpa_manager"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "fpa_senior",
+      "name": "Senior FP&A Manager",
+      "email": null,
+      "kind": "human",
+      "role_tags": ["fpa", "fpa_senior"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "fpa_analyst",
+      "name": "FP&A Analyst",
+      "email": null,
+      "kind": "human",
+      "role_tags": ["fpa", "fpa_analyst"],
+      "active": true,
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ]
+}

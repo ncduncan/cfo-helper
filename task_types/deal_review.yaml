@@ -1,0 +1,15 @@
+name: deal_review
+title_template: "Deal review — {deal_label}"
+description: |
+  Evaluate a single deal, contract, or pricing change.
+  3-phase pipeline: Commercial pulls evidence, FP&A models impact, Reviewer sanity-checks.
+brief_schema:
+  - { field: deal_label, type: text, required: true, label: "Deal label (customer + product)" }
+  - { field: deal_id, type: text, required: false, label: "Deal ID (if known, ties to deals table)" }
+  - { field: customer_id, type: text, required: false, label: "Customer ID" }
+  - { field: question, type: markdown, required: true, label: "Specific question to answer" }
+  - { field: scenarios, type: markdown, label: "Scenarios to model (optional)" }
+pipeline:
+  - { phase: P1, agent: commercial, kind: "deterministic+narrative" }
+  - { phase: P2, agent: fpa, kind: "deterministic+narrative" }
+  - { phase: P3, agent: reviewer, kind: "deterministic+narrative" }

@@ -1,0 +1,44 @@
+name: accounting_qa
+title_template: "Q&A — {topic}"
+description: |
+  Accounting / tax question grounded in the curated knowledge base.
+  P1 Intake (parse question, optionally load deal)
+  P2 Research (retrieve KB hits, set confidence)
+  P3 Memo (synthesize answer with citations) — optional
+  P4 Reviewer (verify every claim cites a real, non-stale KB file)
+brief_schema:
+  - { field: topic, type: text, required: true,
+      label: "Short topic" }
+  - { field: question, type: markdown, required: true,
+      label: "Full question with context" }
+  - { field: jurisdiction, type: select, required: true,
+      options: [us_federal, uk, ireland, eu_other, asia_pac, gcc, none_pure_gaap] }
+  - { field: framework, type: multiselect, required: true,
+      options: [asc606, asc350_40, asc985_20, asc340_40, asc842, asc805,
+                irc_41, irc_174, oecd_pillar_two, transfer_pricing,
+                vat_eu, vat_uk, none_specified] }
+  - { field: deal_id, type: text, required: false,
+      label: "Deal ID (if the question references a specific deal)" }
+  - { field: customer_id, type: text, required: false }
+  - { field: artifact_paths, type: file_list, required: false,
+      label: "Contract / memo / supporting docs" }
+  - { field: include_memo, type: bool, default: true,
+      label: "Produce a formal memo (Stage 2)?" }
+pipeline:
+  - phase: P1
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p1_qa_intake
+  - phase: P2
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p2_qa_research
+  - phase: P3
+    agent: reporting
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p3_qa_memo
+    conditional_on: { brief_field: include_memo, equals: true }
+  - phase: P4
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_qa_review

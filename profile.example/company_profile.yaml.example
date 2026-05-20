@@ -1,0 +1,91 @@
+# profile/company_profile.yaml — structured company profile.
+#
+# Created by the onboarding skill's first-run mode (or copy this file to
+# ../profile/company_profile.yaml and edit by hand). Pydantic-validated by
+# web.models.CompanyProfile.
+
+company:
+  name: "Your Company"
+  org_name: "Your Company"               # used in document headers/footers/subtitles
+  description: "One sentence on what you sell and to whom."
+  cfo_name: "CFO Name"
+  cfo_email: "cfo@example.com"
+  industry: "saas"                       # free text: saas / fintech / marketplace / industrial_saas / ...
+  fiscal_year_start: "01-01"             # MM-DD
+  primary_currencies: ["USD", "EUR", "GBP"]
+
+revenue_model:
+  - "subscription"
+  # - "usage_based"
+  # - "multi_year_prepay"
+  # - "bundled"
+  # - "services"
+  # - "transactional"
+
+customer_archetypes:
+  - id: "enterprise"
+    name: "Enterprise"
+    description: "Large, long-term contracts; high ARPC; co-owned account teams."
+    typical_acv: 500000
+  - id: "mid_market"
+    name: "Mid-market"
+    description: "Growing SMB segment with multi-year potential."
+    typical_acv: 100000
+  - id: "startup"
+    name: "Startup"
+    description: "Early-stage; lower ACV; higher count; product-led entry."
+    typical_acv: 25000
+
+product_lines:
+  - id: "core"
+    name: "Core platform"
+    products: ["Product A"]
+  - id: "addons"
+    name: "Add-ons"
+    products: ["Product B", "Product C"]
+
+competitors:
+  - name: "Competitor A"
+    overlap: "core platform; price-aggressive at the mid-market"
+  - name: "Competitor B"
+    overlap: "adjacent suite; partner on some integrations"
+  - name: "Competitor C"
+    overlap: "incumbent platform; sticky once installed"
+
+kpis:
+  headline:
+    - { id: "arr_closing", name: "ARR (closing)", definition: "Annualized run-rate of in-force subscriptions" }
+    - { id: "nrr", name: "NRR", definition: "(Beginning ARR cohort + expansion − contraction − churn) / Beginning ARR" }
+    - { id: "grr", name: "GRR", definition: "NRR excluding expansion" }
+    - { id: "logo_retention", name: "Logo retention", definition: "% of customers retained MoM" }
+    - { id: "magic_number", name: "Magic Number", definition: "(ARR q t+1 − ARR q t) / Sales & Marketing $ q t" }
+    - { id: "rule_of_40", name: "Rule of 40", definition: "Revenue growth % + FCF margin %" }
+    - { id: "gross_margin_pct", name: "Gross Margin %", definition: "(Revenue − COGS) / Revenue" }
+    - { id: "billings_rpo_revenue_waterfall", name: "Bookings/Billings/RPO/Revenue waterfall", definition: "Four-way reconciliation" }
+    - { id: "capr_d_pct", name: "Capitalized R&D % of total R&D", definition: "per ASC 350-40 / 985-20" }
+    - { id: "top10_concentration", name: "Top-10 customer concentration", definition: "top-10 ARR / total ARR" }
+    - { id: "fx_neutral_rev_growth", name: "FX-neutral revenue growth", definition: "revenue in constant currency vs. PY" }
+
+materiality:
+  variance_abs_usd: 50000
+  variance_pct: 0.05
+  tb_tolerance_usd: 0.50
+
+parent_company:
+  has_parent: false                      # set true if you roll up to a parent
+  name: null                             # e.g., "AcmeCorp" if has_parent
+  segment_name: null
+  has_parent_chart: false                # requires parent-chart-reconciliation
+  parent_close_calendar_aligned: false
+
+policies:
+  account_map: "profile/memory/account_map.json"
+  accrual: "profile/memory/accrual_policy.yaml"
+  capitalization: "profile/memory/capitalization_policy.yaml"
+  cost_categories: "profile/memory/cost_categories.yaml"
+  credit: "profile/memory/credit_policy.yaml"
+  delegation: "profile/memory/delegation_matrix.yaml"
+  fx_hedge: "profile/memory/fx_hedge_policy.yaml"
+  operational_kpis: "profile/memory/operational_kpis.yaml"
+  strikezone: "profile/memory/strikezone.yaml"
+  recurring_items: "profile/memory/recurring_items.md"

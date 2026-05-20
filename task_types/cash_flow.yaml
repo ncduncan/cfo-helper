@@ -1,0 +1,41 @@
+name: cash_flow
+title_template: "Cash flow — {period}"
+description: |
+  Cash-flow snapshot and optimization. Stage 1 (P2) covers DSO by archetype,
+  AR aging, deferred-revenue rollforward, FX exposure, and credit-policy
+  watchlist. Stage 2 (P3, optional) adds optimization scenarios:
+  prepay-incentive ROI, payment-term migration value, and FX hedge sizing.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Analysis period (YYYY-MM)" }
+  - { field: scope, type: multiselect, required: false,
+      label: "Scope (optional — default snapshot)",
+      options: [snapshot, dso_by_archetype, ar_aging, deferred_rev_rollforward,
+                fx_exposure, customer_watchlist, ccc] }
+  - { field: opening_deferred_rev_usd, type: number, required: false,
+      label: "Opening deferred revenue balance ($) — for rollforward" }
+  - { field: prepay_discount_pct, type: number, required: false,
+      label: "Prepay incentive discount (decimal, e.g. 0.05)" }
+  - { field: target_payment_term, type: select, required: false,
+      label: "Migration target term",
+      options: [net30, prepay_annual, prepay_full_term] }
+  - { field: optimization_scenarios_required, type: bool, default: false,
+      label: "Run Stage-2 optimization scenarios?" }
+pipeline:
+  - phase: P1
+    agent: controller
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p1_cash_intake
+  - phase: P2
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p2_cash_snapshot
+  - phase: P3
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p3_cash_optimization
+    conditional_on: { brief_field: optimization_scenarios_required, equals: true }
+  - phase: P4
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_cash_review

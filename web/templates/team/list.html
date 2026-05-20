@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Team — CFO Helper{% endblock %}
+{% block content %}
+<div class="flex items-baseline justify-between mb-4">
+  <div>
+    <h1 class="text-2xl font-semibold">Team</h1>
+    <p class="text-slate-600 text-sm">
+      Members who can be assigned standard-work steps. Forge is the named AI
+      member — it drains its queue via VS Code's <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">/run-queue</code>.
+    </p>
+  </div>
+  <a href="/team/new"
+     class="bg-slate-900 text-white text-sm rounded px-3 py-1.5 hover:bg-slate-700">
+    + New member
+  </a>
+</div>
+
+{% include "team/_list_table.html" %}
+{% endblock %}

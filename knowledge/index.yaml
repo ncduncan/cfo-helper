@@ -1,0 +1,723 @@
+version: 1
+built_at: '2026-05-02'
+entries:
+- &id001
+  id: asc340_40.commissions
+  path: asc340_40/commissions.md
+  tags:
+  - asc340_40
+  - commissions
+  - capitalized_contract_costs
+  - amortization
+  - expected_customer_life
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 340-40 \u2014 Other Assets and Deferred Costs, Contracts with\
+      \ Customers"
+    url: https://asc.fasb.org/topic/340/subtopic/40
+- &id002
+  id: asc350_40.internal_use_software
+  path: asc350_40/internal_use_software.md
+  tags:
+  - asc350_40
+  - capitalization
+  - internal_use
+  - application_development
+  - amortization
+  - impairment
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 350-40 \u2014 Internal-Use Software"
+    url: https://asc.fasb.org/topic/350/subtopic/40
+- &id003
+  id: asc606.contract_modifications
+  path: asc606/contract_modifications.md
+  tags:
+  - asc606
+  - modification
+  - expansion
+  - contraction
+  - prospective
+  - cumulative_catchup
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - tier1
+    - lessor
+    - cargo
+    - bga
+    - military
+    - channel
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 606-10-25-10 \u2014 Contract modifications"
+    url: https://asc.fasb.org/606/SectionPage?topic=606&subtopic=10&section=25
+- &id004
+  id: asc606.licenses_vs_saas
+  path: asc606/licenses_vs_saas.md
+  tags:
+  - asc606
+  - license
+  - saas
+  - hosted
+  - point_in_time
+  - over_time
+  - software
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - tier1
+    - lessor
+    - cargo
+    - bga
+    - military
+    - channel
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 606-10-55-54 \u2014 Licensing of intellectual property"
+    url: https://asc.fasb.org/606/SectionPage?topic=606&subtopic=10&section=55
+  - name: "AICPA Audit & Accounting Guide \u2014 Software Revenue"
+    year: 2025
+- &id005
+  id: asc606.multi_element
+  path: asc606/multi_element_allocation.md
+  tags:
+  - asc606
+  - ssp
+  - multi_element
+  - performance_obligation
+  - allocation
+  - bundle
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - tier1
+    - lessor
+    - cargo
+    - bga
+    - military
+    - channel
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 606-10-32 \u2014 Allocation"
+    url: https://asc.fasb.org/606/SectionPage?topic=606&subtopic=10&section=32
+  - name: "AICPA Audit & Accounting Guide \u2014 Software Revenue"
+    year: 2025
+- &id006
+  id: asc606.overview
+  path: asc606/overview.md
+  tags:
+  - asc606
+  - revenue
+  - performance_obligation
+  - five_step
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - tier1
+    - lessor
+    - cargo
+    - bga
+    - military
+    - channel
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 606 \u2014 Revenue from Contracts with Customers"
+    url: https://asc.fasb.org/topic/606
+  - name: "AICPA Audit & Accounting Guide \u2014 Revenue Recognition"
+    year: 2025
+- &id007
+  id: asc606.principal_vs_agent
+  path: asc606/principal_vs_agent.md
+  tags:
+  - asc606
+  - principal
+  - agent
+  - gross
+  - net
+  - channel
+  - channel_partner
+  - intermediary
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - channel
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 606-10-55-36 to -40 \u2014 Principal vs. agent considerations"
+    url: https://asc.fasb.org/606/SectionPage?topic=606&subtopic=10&section=55
+- &id008
+  id: asc606.variable_consideration
+  path: asc606/variable_consideration.md
+  tags:
+  - asc606
+  - variable_consideration
+  - usage_based
+  - constraint
+  - expected_value
+  - most_likely_amount
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - lessor
+    - tier1
+    - cargo
+    - military
+    products:
+    - ats
+    - analytics_platform
+    - ems
+  sources:
+  - name: "FASB ASC 606-10-32-5 to -13 \u2014 Variable consideration"
+    url: https://asc.fasb.org/606/SectionPage?topic=606&subtopic=10&section=32
+- &id009
+  id: asc805.business_combinations_light
+  path: asc805/business_combinations_light.md
+  tags:
+  - asc805
+  - business_combinations
+  - acquisition
+  - goodwill
+  - fair_value
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 805 \u2014 Business Combinations"
+    url: https://asc.fasb.org/topic/805
+- &id010
+  id: asc842.lessee_basics
+  path: asc842/lessee_basics.md
+  tags:
+  - asc842
+  - lease
+  - lessee
+  - right_of_use
+  - finance_lease
+  - operating_lease
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 842 \u2014 Leases"
+    url: https://asc.fasb.org/topic/842
+- &id011
+  id: asc985_20.sale_of_software
+  path: asc985_20/sale_of_software.md
+  tags:
+  - asc985_20
+  - capitalization
+  - sale_of_software
+  - technological_feasibility
+  - amortization
+  jurisdictions:
+  - us_federal
+  - none_pure_gaap
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "FASB ASC 985-20 \u2014 Costs of Software to Be Sold, Leased, or Marketed"
+    url: https://asc.fasb.org/topic/985/subtopic/20
+- &id012
+  id: tax.ireland.corporation_tax
+  path: tax/ireland/corporation_tax.md
+  tags:
+  - tax
+  - ireland
+  - corporation_tax
+  - ct
+  - revenue
+  jurisdictions:
+  - ireland
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "Irish Revenue \u2014 Corporation Tax"
+    url: https://www.revenue.ie/en/companies-and-charities/corporation-tax-for-companies/index.aspx
+  - name: Taxes Consolidation Act 1997
+    url: https://www.irishstatutebook.ie/eli/1997/act/39/enacted/en/html
+- &id013
+  id: tax.ireland.kdb
+  path: tax/ireland/knowledge_development_box.md
+  tags:
+  - tax
+  - ireland
+  - kdb
+  - knowledge_development_box
+  - ip
+  - modified_nexus
+  jurisdictions:
+  - ireland
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "Irish Revenue \u2014 Knowledge Development Box (KDB)"
+    url: https://www.revenue.ie/en/tax-professionals/tdm/income-tax-capital-gains-tax-corporation-tax/part-29/29-03-01.pdf
+  - name: TCA 1997 ss.769G-769R
+    url: https://www.irishstatutebook.ie/eli/1997/act/39/section/769G/enacted/en/html
+- &id014
+  id: tax.oecd.pillar_two
+  path: tax/oecd/pillar_two_minimum_tax.md
+  tags:
+  - tax
+  - oecd
+  - pillar_two
+  - minimum_tax
+  - globe
+  - qdmtt
+  - iir
+  - utpr
+  - etr
+  jurisdictions:
+  - us_federal
+  - uk
+  - ireland
+  - eu_other
+  - asia_pac
+  - gcc
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: OECD Pillar Two GloBE Rules
+    url: https://www.oecd.org/tax/beps/pillar-two-globe-rules-faqs.pdf
+  - name: "OECD Inclusive Framework \u2014 Pillar Two model rules"
+    url: https://www.oecd.org/tax/beps/tax-challenges-arising-from-the-digitalisation-of-the-economy-global-anti-base-erosion-model-rules-pillar-two.htm
+- &id015
+  id: tax.uk.corporation_tax
+  path: tax/uk/corporation_tax.md
+  tags:
+  - tax
+  - uk
+  - corporation_tax
+  - hmrc
+  jurisdictions:
+  - uk
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "HMRC \u2014 Corporation Tax rates"
+    url: https://www.gov.uk/corporation-tax-rates
+  - name: Corporation Tax Act 2010
+    url: https://www.legislation.gov.uk/ukpga/2010/4/contents
+- &id016
+  id: tax.uk.transfer_pricing
+  path: tax/uk/transfer_pricing.md
+  tags:
+  - tax
+  - uk
+  - transfer_pricing
+  - intercompany
+  - tnmm
+  - oecd
+  jurisdictions:
+  - uk
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "TIOPA 2010 Part 4 \u2014 Transfer pricing"
+    url: https://www.legislation.gov.uk/ukpga/2010/8/part/4
+  - name: OECD Transfer Pricing Guidelines (2022)
+    url: https://www.oecd.org/tax/transfer-pricing/oecd-transfer-pricing-guidelines-for-multinational-enterprises-and-tax-administrations-20769717.htm
+- &id017
+  id: tax.us_federal.corp_rate
+  path: tax/us_federal/corp_rate.md
+  tags:
+  - tax
+  - us_federal
+  - corporate_rate
+  - federal_income_tax
+  jurisdictions:
+  - us_federal
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "IRC \xA711 \u2014 Tax imposed on corporations"
+    url: https://www.law.cornell.edu/uscode/text/26/11
+  - name: IRS Form 1120 instructions
+    url: https://www.irs.gov/forms-pubs/about-form-1120
+- &id018
+  id: tax.us_federal.irc_174
+  path: tax/us_federal/irc_174_capitalization.md
+  tags:
+  - tax
+  - us_federal
+  - irc_174
+  - rd_capitalization
+  - research_capitalization
+  - tcja
+  jurisdictions:
+  - us_federal
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "IRC \xA7174 \u2014 Amortization of research and experimental expenditures"
+    url: https://www.law.cornell.edu/uscode/text/26/174
+  - name: "TCJA 2017 \xA713206"
+    url: https://www.congress.gov/bill/115th-congress/house-bill/1
+- &id019
+  id: tax.us_federal.irc_41
+  path: tax/us_federal/irc_41_research_credit.md
+  tags:
+  - tax
+  - us_federal
+  - irc_41
+  - rd_credit
+  - research_credit
+  - qre
+  jurisdictions:
+  - us_federal
+  last_reviewed: '2026-05-02'
+  applicability:
+    archetypes:
+    - all
+    products:
+    - all
+  sources:
+  - name: "IRC \xA741 \u2014 Credit for increasing research activities"
+    url: https://www.law.cornell.edu/uscode/text/26/41
+  - name: IRS Form 6765 instructions
+    url: https://www.irs.gov/forms-pubs/about-form-6765
+by_tag:
+  acquisition:
+  - asc805.business_combinations_light
+  agent:
+  - asc606.principal_vs_agent
+  allocation:
+  - asc606.multi_element
+  amortization:
+  - asc340_40.commissions
+  - asc350_40.internal_use_software
+  - asc985_20.sale_of_software
+  application_development:
+  - asc350_40.internal_use_software
+  asc340_40:
+  - asc340_40.commissions
+  asc350_40:
+  - asc350_40.internal_use_software
+  asc606:
+  - asc606.contract_modifications
+  - asc606.licenses_vs_saas
+  - asc606.multi_element
+  - asc606.overview
+  - asc606.principal_vs_agent
+  - asc606.variable_consideration
+  asc805:
+  - asc805.business_combinations_light
+  asc842:
+  - asc842.lessee_basics
+  asc985_20:
+  - asc985_20.sale_of_software
+  bundle:
+  - asc606.multi_element
+  business_combinations:
+  - asc805.business_combinations_light
+  capitalization:
+  - asc350_40.internal_use_software
+  - asc985_20.sale_of_software
+  capitalized_contract_costs:
+  - asc340_40.commissions
+  channel:
+  - asc606.principal_vs_agent
+  commissions:
+  - asc340_40.commissions
+  constraint:
+  - asc606.variable_consideration
+  contraction:
+  - asc606.contract_modifications
+  corporate_rate:
+  - tax.us_federal.corp_rate
+  corporation_tax:
+  - tax.ireland.corporation_tax
+  - tax.uk.corporation_tax
+  ct:
+  - tax.ireland.corporation_tax
+  cumulative_catchup:
+  - asc606.contract_modifications
+  etr:
+  - tax.oecd.pillar_two
+  expansion:
+  - asc606.contract_modifications
+  expected_customer_life:
+  - asc340_40.commissions
+  expected_value:
+  - asc606.variable_consideration
+  fair_value:
+  - asc805.business_combinations_light
+  federal_income_tax:
+  - tax.us_federal.corp_rate
+  finance_lease:
+  - asc842.lessee_basics
+  five_step:
+  - asc606.overview
+  globe:
+  - tax.oecd.pillar_two
+  goodwill:
+  - asc805.business_combinations_light
+  gross:
+  - asc606.principal_vs_agent
+  hmrc:
+  - tax.uk.corporation_tax
+  hosted:
+  - asc606.licenses_vs_saas
+  iir:
+  - tax.oecd.pillar_two
+  impairment:
+  - asc350_40.internal_use_software
+  intercompany:
+  - tax.uk.transfer_pricing
+  intermediary:
+  - asc606.principal_vs_agent
+  internal_use:
+  - asc350_40.internal_use_software
+  ip:
+  - tax.ireland.kdb
+  irc_174:
+  - tax.us_federal.irc_174
+  irc_41:
+  - tax.us_federal.irc_41
+  ireland:
+  - tax.ireland.corporation_tax
+  - tax.ireland.kdb
+  kdb:
+  - tax.ireland.kdb
+  knowledge_development_box:
+  - tax.ireland.kdb
+  lease:
+  - asc842.lessee_basics
+  lessee:
+  - asc842.lessee_basics
+  license:
+  - asc606.licenses_vs_saas
+  minimum_tax:
+  - tax.oecd.pillar_two
+  modification:
+  - asc606.contract_modifications
+  modified_nexus:
+  - tax.ireland.kdb
+  most_likely_amount:
+  - asc606.variable_consideration
+  multi_element:
+  - asc606.multi_element
+  channel_partner:
+  - asc606.principal_vs_agent
+  net:
+  - asc606.principal_vs_agent
+  oecd:
+  - tax.oecd.pillar_two
+  - tax.uk.transfer_pricing
+  operating_lease:
+  - asc842.lessee_basics
+  over_time:
+  - asc606.licenses_vs_saas
+  performance_obligation:
+  - asc606.multi_element
+  - asc606.overview
+  pillar_two:
+  - tax.oecd.pillar_two
+  point_in_time:
+  - asc606.licenses_vs_saas
+  principal:
+  - asc606.principal_vs_agent
+  prospective:
+  - asc606.contract_modifications
+  qdmtt:
+  - tax.oecd.pillar_two
+  qre:
+  - tax.us_federal.irc_41
+  rd_capitalization:
+  - tax.us_federal.irc_174
+  rd_credit:
+  - tax.us_federal.irc_41
+  research_capitalization:
+  - tax.us_federal.irc_174
+  research_credit:
+  - tax.us_federal.irc_41
+  revenue:
+  - asc606.overview
+  - tax.ireland.corporation_tax
+  right_of_use:
+  - asc842.lessee_basics
+  saas:
+  - asc606.licenses_vs_saas
+  sale_of_software:
+  - asc985_20.sale_of_software
+  software:
+  - asc606.licenses_vs_saas
+  ssp:
+  - asc606.multi_element
+  tax:
+  - tax.ireland.corporation_tax
+  - tax.ireland.kdb
+  - tax.oecd.pillar_two
+  - tax.uk.corporation_tax
+  - tax.uk.transfer_pricing
+  - tax.us_federal.corp_rate
+  - tax.us_federal.irc_174
+  - tax.us_federal.irc_41
+  tcja:
+  - tax.us_federal.irc_174
+  technological_feasibility:
+  - asc985_20.sale_of_software
+  tnmm:
+  - tax.uk.transfer_pricing
+  transfer_pricing:
+  - tax.uk.transfer_pricing
+  uk:
+  - tax.uk.corporation_tax
+  - tax.uk.transfer_pricing
+  us_federal:
+  - tax.us_federal.corp_rate
+  - tax.us_federal.irc_174
+  - tax.us_federal.irc_41
+  usage_based:
+  - asc606.variable_consideration
+  utpr:
+  - tax.oecd.pillar_two
+  variable_consideration:
+  - asc606.variable_consideration
+by_jurisdiction:
+  asia_pac:
+  - tax.oecd.pillar_two
+  eu_other:
+  - tax.oecd.pillar_two
+  gcc:
+  - tax.oecd.pillar_two
+  ireland:
+  - tax.ireland.corporation_tax
+  - tax.ireland.kdb
+  - tax.oecd.pillar_two
+  none_pure_gaap:
+  - asc340_40.commissions
+  - asc350_40.internal_use_software
+  - asc606.contract_modifications
+  - asc606.licenses_vs_saas
+  - asc606.multi_element
+  - asc606.overview
+  - asc606.principal_vs_agent
+  - asc606.variable_consideration
+  - asc805.business_combinations_light
+  - asc842.lessee_basics
+  - asc985_20.sale_of_software
+  uk:
+  - tax.oecd.pillar_two
+  - tax.uk.corporation_tax
+  - tax.uk.transfer_pricing
+  us_federal:
+  - asc340_40.commissions
+  - asc350_40.internal_use_software
+  - asc606.contract_modifications
+  - asc606.licenses_vs_saas
+  - asc606.multi_element
+  - asc606.overview
+  - asc606.principal_vs_agent
+  - asc606.variable_consideration
+  - asc805.business_combinations_light
+  - asc842.lessee_basics
+  - asc985_20.sale_of_software
+  - tax.oecd.pillar_two
+  - tax.us_federal.corp_rate
+  - tax.us_federal.irc_174
+  - tax.us_federal.irc_41
+by_id:
+  asc340_40.commissions: *id001
+  asc350_40.internal_use_software: *id002
+  asc606.contract_modifications: *id003
+  asc606.licenses_vs_saas: *id004
+  asc606.multi_element: *id005
+  asc606.overview: *id006
+  asc606.principal_vs_agent: *id007
+  asc606.variable_consideration: *id008
+  asc805.business_combinations_light: *id009
+  asc842.lessee_basics: *id010
+  asc985_20.sale_of_software: *id011
+  tax.ireland.corporation_tax: *id012
+  tax.ireland.kdb: *id013
+  tax.oecd.pillar_two: *id014
+  tax.uk.corporation_tax: *id015
+  tax.uk.transfer_pricing: *id016
+  tax.us_federal.corp_rate: *id017
+  tax.us_federal.irc_174: *id018
+  tax.us_federal.irc_41: *id019

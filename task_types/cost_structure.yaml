@@ -1,0 +1,39 @@
+name: cost_structure
+title_template: "Cost structure — {period}"
+description: |
+  Drill into cost composition: archetype trends (people / vendor / infra /
+  capex), top movers, vendor concentration, headcount unit cost,
+  capitalization (ASC 350-40 / 985-20 / 340-40), and unit economics
+  (cost per aircraft on platform / per pilot).
+  Stage 1 (P2) produces a scorecard.
+  Stage 2 (P3, optional) produces a narrative memo.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Analysis period (YYYY-MM)" }
+  - { field: comparison, type: select, required: true,
+      label: "Comparison",
+      options: [vs_prior_month, vs_prior_quarter, vs_prior_year, vs_budget, none] }
+  - { field: focus, type: multiselect,
+      label: "Areas of focus (optional — all run by default)",
+      options: [r_and_d_capitalization, headcount, vendors, unit_economics,
+                commissions_amortization, fx_neutral_trend, allocations] }
+  - { field: include_memo, type: bool, default: false,
+      label: "Run formal memo (Stage 2)?" }
+pipeline:
+  - phase: P1
+    agent: controller
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p1_cost_intake
+  - phase: P2
+    agent: fpa
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p2_cost_analysis
+  - phase: P3
+    agent: reporting
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p3_cost_memo
+    conditional_on: { brief_field: include_memo, equals: true }
+  - phase: P4
+    agent: reviewer
+    kind: deterministic+narrative
+    deterministic_runner: scripts.dispatch.run_p4_cost_review

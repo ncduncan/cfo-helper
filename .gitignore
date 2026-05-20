@@ -1,0 +1,45 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+logs/
+
+# Per-task derived artifacts — keep inputs + task.json, ignore the rest
+tasks/*/working/
+tasks/*/outputs/
+tasks/*/review/
+tasks/*/final/
+tasks/*/state.json
+tasks/*/logs/
+tasks/*/.proposal_drafts/
+
+# Legacy workspace layout (pre-Phase-2 migration)
+workspace/*/working/
+workspace/*/outputs/
+workspace/*/review/
+workspace/*/final/
+workspace/*/state.json
+
+uv.lock
+
+# Private profile — never commit. Everything in profile/ is the user's own
+# company data (CLAUDE.md §1–7, memory, db, inbox, denylist). The framework
+# ships profile.example/ as starter templates.
+profile/
+
+# Belt-and-suspenders: existing runtime db state used to be tracked under db/.
+# After the open-source split, db/ contents live under profile/db/. If a stray
+# write still lands in db/, ignore it.
+db/*.json
+db/*.lock
+
+# Inbox content (user-supplied PPTX/XLSX/DOCX masters, historicals, etc.)
+# lives under profile/inbox/. The repo ships only inbox/README.md as a stub.
+inbox/historicals/
+inbox/policies/
+inbox/reference/
+inbox/source-data/
+inbox/templates/
+
+# Task instance directories at root tasks/<task-id>/ are runtime state.
+tasks/*/

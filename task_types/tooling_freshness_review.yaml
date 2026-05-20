@@ -1,0 +1,50 @@
+name: tooling_freshness_review
+title_template: "Anthropic upstream freshness review — {period}"
+description: |
+  Recurring (default monthly, LCD+15) check that two upstream Anthropic
+  sources we adapted from are still current:
+
+  - anthropics/skills patterns adapted into scripts/{xlsx,pptx,docx,pdf,charts}/
+    (pinned in memory/upstream_skills_pin.json).
+  - anthropics/financial-services SKILL.md files adapted into
+    .claude/skills/{audit-xls,accrual-schedule,break-trace,gl-recon,audit-pptx}/
+    (pinned in memory/upstream_fsi_skills_pin.json).
+
+  The check fetches per-file commit SHAs from each upstream, compares
+  against the pinned manifest, and surfaces any deltas as a draft task on
+  the dashboard kanban.
+
+  If nothing changed in either upstream since the last pin, Phase 1
+  short-circuits and the task auto-completes with a one-line "no changes"
+  entry — the user never has to look at it. If something changed, the
+  task sits in "Awaiting your input" with a pre-built diff report (one
+  section per upstream) to review.
+
+  See CLAUDE.md §11 (builder modules) and the plan at
+  /Users/natduncan/.claude/plans/yes-i-think-it-s-valiant-pudding.md §6.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Review period (YYYY-MM, typically the most-recent close)" }
+  - { field: scope, type: text, required: false,
+      label: "Specific skill to review (default: all)" }
+pipeline:
+  - phase: P1
+    agent: coordinator
+    kind: deterministic
+    deterministic_runner: scripts.dispatch.run_p1_freshness_diff
+  - phase: P2
+    agent: coordinator
+    kind: narrative_only
+    description: |
+      If P1 reported no changes, this phase auto-completes. Otherwise the
+      reviewing agent reads the diff report from P1's artifact, decides
+      per skill whether to (a) adapt our local files, (b) note as
+      considered-not-adopted, or (c) re-pin and move on. CFO approves at P3.
+  - phase: P3
+    agent: coordinator
+    kind: deterministic
+    deterministic_runner: scripts.dispatch.run_p3_freshness_repin
+    description: |
+      After CFO sign-off in P2, runs `scripts.tooling.freshness_check
+      --update-pin <skill>` for each skill that was reviewed and
+      acknowledged.

@@ -1,0 +1,23 @@
+<div id="cal-week-wrap"
+     hx-get="/calendar/fragments/grid?view=week&start={{ grid[0].isoformat() }}"
+     hx-trigger="db-changed:tasks from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  <div class="grid grid-cols-7 gap-1">
+    {% for d in grid %}
+    {% set chips = bucket[d] %}
+    <div class="bg-white rounded border border-slate-200 p-2 min-h-[160px] {% if d == today %}ring-2 ring-sky-500{% endif %}">
+      <div class="text-xs text-slate-500 mb-1 {% if d == today %}font-semibold text-sky-700{% endif %}">
+        {{ ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][d.weekday()] }} {{ d.day }}
+      </div>
+      {% for t in chips %}
+      <a href="/tasks/{{ t.id }}"
+         title="{{ t.title }}"
+         class="block truncate text-xs px-1 py-0.5 rounded mb-0.5 {{ status_color.get(t.status, 'bg-slate-200') }}">
+        {{ truncate(t.title, 30) }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>

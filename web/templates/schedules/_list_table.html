@@ -1,0 +1,60 @@
+<div id="sched-table-wrap"
+     hx-get="/schedules/fragments/list"
+     hx-trigger="db-changed:schedules from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+  {% if not items %}
+    <div class="p-4 rounded border border-slate-200 bg-white text-slate-600 text-sm">
+      No schedules. <a href="/schedules/new" class="text-sky-700 hover:underline">Create one</a>
+      to fire a recurring task from a standard work template.
+    </div>
+  {% else %}
+  <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+        <tr>
+          <th class="text-left px-4 py-2">Name</th>
+          <th class="text-left px-4 py-2">Standard work</th>
+          <th class="text-left px-4 py-2">Cron</th>
+          <th class="text-left px-4 py-2">Period template</th>
+          <th class="text-left px-4 py-2">Enabled</th>
+          <th class="text-left px-4 py-2">Last fire</th>
+          <th class="text-right px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for s in items %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2 font-medium">{{ s.name }}<div class="text-xs text-slate-500 font-mono">{{ s.id }}</div></td>
+          <td class="px-4 py-2 text-xs"><a href="/standard-work/{{ s.standard_work_id }}" class="text-sky-700 hover:underline font-mono">{{ s.standard_work_id }}</a></td>
+          <td class="px-4 py-2 text-xs font-mono">{{ s.cron }}</td>
+          <td class="px-4 py-2 text-xs">{{ s.brief_template.period if s.brief_template and s.brief_template.period else '—' }}</td>
+          <td class="px-4 py-2 text-xs">
+            {% if s.enabled %}<span class="text-emerald-700">Enabled</span>{% else %}<span class="text-slate-500">Disabled</span>{% endif %}
+          </td>
+          <td class="px-4 py-2 text-xs">
+            {% if s.last_fire %}{{ s.last_fire[:19] }}<div class="text-xs text-slate-500">{{ s.last_fire_result or '' }}</div>{% else %}—{% endif %}
+          </td>
+          <td class="px-4 py-2 text-right text-xs">
+            <a href="/schedules/{{ s.id }}/edit" class="text-sky-700 hover:underline mr-3">edit</a>
+            <form action="/schedules/{{ s.id }}/toggle-enabled" method="post" class="inline">
+              <button type="submit" class="text-slate-600 hover:underline mr-3">
+                {% if s.enabled %}disable{% else %}enable{% endif %}
+              </button>
+            </form>
+            <form action="/schedules/{{ s.id }}/run-now" method="post" class="inline">
+              <button type="submit" class="text-emerald-700 hover:underline mr-3">run now</button>
+            </form>
+            <form action="/schedules/{{ s.id }}/delete" method="post" class="inline">
+              <button type="submit"
+                      onclick="return confirm('Delete schedule {{ s.name }}?')"
+                      class="text-rose-700 hover:underline">delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>

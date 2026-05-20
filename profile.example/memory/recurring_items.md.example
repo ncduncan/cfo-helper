@@ -1,0 +1,16 @@
+# Recurring items (profile/memory/recurring_items.md)
+
+Patterns Reviewer should not flag as anomalies on first sight, even when
+they exceed the materiality threshold. Add entries as you accumulate
+experience with your data.
+
+Format:
+
+```
+- <YYYY-MM>: <short description>. Reason it's expected: <one sentence>.
+  Threshold: <USD amount or %>. Approved by: <CFO / Controller>.
+```
+
+## Entries
+
+(none yet)
