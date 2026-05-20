@@ -33,13 +33,5 @@ profile/
 db/*.json
 db/*.lock
 
-# Inbox content (user-supplied PPTX/XLSX/DOCX masters, historicals, etc.)
-# lives under profile/inbox/. The repo ships only inbox/README.md as a stub.
-inbox/historicals/
-inbox/policies/
-inbox/reference/
-inbox/source-data/
-inbox/templates/
-
 # Task instance directories at root tasks/<task-id>/ are runtime state.
 tasks/*/
