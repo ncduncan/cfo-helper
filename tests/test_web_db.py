@@ -1,4 +1,4 @@
-"""Tests for web.db — JSON-collection store with flock + atomic rename."""
+"""Tests for web.db — JSON-collection store with file lock + atomic rename."""
 
 from __future__ import annotations
 
@@ -105,7 +105,7 @@ def test_atomic_write_does_not_leave_partial_file(db_in_tmp, tmp_path, monkeypat
     assert db_in_tmp.find("team", "boom") is None
 
 
-def test_concurrent_writes_serialize_via_flock(db_in_tmp, tmp_path):
+def test_concurrent_writes_serialize(db_in_tmp, tmp_path):
     """Two threads inserting into the same collection must both land."""
     import threading
 

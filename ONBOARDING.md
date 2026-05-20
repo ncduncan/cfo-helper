@@ -13,8 +13,17 @@ profile" or invoke the skill directly.
 ## 1. Install dependencies
 
 ```bash
-# Install uv (https://github.com/astral-sh/uv)
+# macOS / Linux — install uv (https://github.com/astral-sh/uv)
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# From the repo root
+uv venv --python 3.13
+uv pip install -e .
+```
+
+```powershell
+# Windows (PowerShell) — install uv
+irm https://astral.sh/uv/install.ps1 | iex
 
 # From the repo root
 uv venv --python 3.13
@@ -24,7 +33,13 @@ uv pip install -e .
 ## 2. Install the safety hooks
 
 ```bash
+# macOS / Linux
 .venv/bin/pre-commit install
+```
+
+```powershell
+# Windows (PowerShell)
+.venv\Scripts\pre-commit install
 ```
 
 This installs the local pre-commit hook that scans staged content against
@@ -72,8 +87,15 @@ gate you'll use for ongoing updates (CLAUDE.md §2 rule 4).
 ## 4. Seed the runtime DB
 
 ```bash
+# macOS / Linux
 .venv/bin/python -m scripts.seed_team
 .venv/bin/python -m scripts.seed_standard_work
+```
+
+```powershell
+# Windows (PowerShell)
+.venv\Scripts\python -m scripts.seed_team
+.venv\Scripts\python -m scripts.seed_standard_work
 ```
 
 `seed_team` reads CFO name / email from `profile/company_profile.yaml` and
@@ -83,19 +105,19 @@ team members via the dashboard at `/team`.
 `seed_standard_work` reads `task_types/*.yaml` (and any `profile/task_types/*.yaml`
 overlays) and creates `profile/db/standard_work.json`.
 
-## 5. Boot the dashboard
+## 5. Open the dashboard
 
-```bash
-.venv/bin/uvicorn web.main:app --port 8765
-```
+Double-click [`dist/mac/CFOHelper.command`](dist/mac/CFOHelper.command) (macOS)
+or [`dist/windows/CFOHelper.vbs`](dist/windows/CFOHelper.vbs) (Windows).
+A window opens, shows a "starting…" spinner for a few seconds, then
+loads the dashboard. Close the window to stop the server.
 
-Visit `http://localhost:8765`. The home page shows alerts (overdue tasks,
-blocked work, pending memory-write proposals); the team, tasks, calendar,
-queue, schedules, and memory-proposals pages are accessible from the nav.
+The home page shows alerts (overdue tasks, blocked work, pending
+memory-write proposals); the team, tasks, calendar, queue, schedules,
+and memory-proposals pages are accessible from the nav.
 
-Optional: install the launchd agent at
-[docs/launchd/cfo-helper.plist](docs/launchd/cfo-helper.plist) so the
-dashboard auto-starts on login.
+Developers can bypass the launcher and run uvicorn directly — see the
+"Run from terminal (developers)" subsection of [README.md](README.md).
 
 ## 6. Adding ongoing context
 
@@ -122,7 +144,13 @@ If you ever stage a commit, the pre-commit hook will scan everything.
 If you want to check the whole tree on demand:
 
 ```bash
+# macOS / Linux
 .venv/bin/python scripts/safety/denylist_check.py --ci
+```
+
+```powershell
+# Windows (PowerShell)
+.venv\Scripts\python scripts/safety/denylist_check.py --ci
 ```
 
 Exit code 0 means clean. Any output is a leak you should fix or move into

@@ -5,10 +5,10 @@ Each collection is a single file ``profile/db/<name>.json`` with shape::
 
     {"version": 1, "rows": [...]}
 
-All writes hold an ``fcntl.flock(LOCK_EX)`` on the sibling
+All writes hold a cross-platform ``filelock.FileLock`` on the sibling
 ``profile/db/<name>.json.lock`` and land via tempfile + ``os.replace()`` so
 readers never see a half-written file. Single uvicorn worker is assumed
-(web.main warns on startup if WEB_CONCURRENCY != 1). The same flock is
+(web.main warns on startup if WEB_CONCURRENCY != 1). The same lock is
 honored by ``scripts/run_queue.py`` so a queue claim from VS Code and a step
 edit from the dashboard cannot collide.
 
@@ -19,13 +19,14 @@ through ``insert/upsert/update/delete``; for compound transactions use
 
 from __future__ import annotations
 
-import fcntl
 import json
 import os
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Iterator
+
+from filelock import FileLock
 
 from scripts.paths import profile_db_dir
 
@@ -75,15 +76,8 @@ def rows(name: str) -> list[dict[str, Any]]:
 def _exclusive_lock(name: str) -> Iterator[None]:
     lock = _lock_path(name)
     lock.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(lock, os.O_WRONLY | os.O_CREAT, 0o644)
-    try:
-        fcntl.flock(fd, fcntl.LOCK_EX)
+    with FileLock(str(lock)):
         yield
-    finally:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_UN)
-        finally:
-            os.close(fd)
 
 
 def _atomic_write(path: Path, doc: dict[str, Any]) -> None:

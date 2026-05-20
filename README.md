@@ -109,19 +109,37 @@ satisfied. The new queue item appears at http://localhost:8765/queue.
 
 ## Setup (one-time)
 
+Supported platforms: **macOS** and **Windows** (Linux works but is not a
+first-class target). Pick the block that matches your OS — everything else
+below is identical.
+
 Install [uv](https://github.com/astral-sh/uv):
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh   # Linux/macOS
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 # or: brew install uv
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://astral.sh/uv/install.ps1 | iex
 ```
 
 From the repo root:
 
 ```bash
+# macOS / Linux
 uv venv --python 3.13
 uv pip install -e .
 .venv/bin/pre-commit install
+```
+
+```powershell
+# Windows (PowerShell)
+uv venv --python 3.13
+uv pip install -e .
+.venv\Scripts\pre-commit install
 ```
 
 The pre-commit hook scans staged content against `profile/.denylist` plus a
@@ -140,17 +158,35 @@ KPIs, accounting policies, and parent-reporting flag; on approval it writes
 Seed the roster and import the standard-work templates:
 
 ```bash
+# macOS / Linux
 .venv/bin/python -m scripts.seed_team
 .venv/bin/python -m scripts.seed_standard_work
 ```
 
-## Boot the dashboard
-
-```bash
-.venv/bin/uvicorn web.main:app --port 8765
+```powershell
+# Windows (PowerShell)
+.venv\Scripts\python -m scripts.seed_team
+.venv\Scripts\python -m scripts.seed_standard_work
 ```
 
-Open http://localhost:8765. Pages:
+## Open the dashboard
+
+- **macOS:** double-click [`dist/mac/CFOHelper.command`](dist/mac/CFOHelper.command).
+  On first launch a Terminal window walks through a one-time install
+  (~3 min). After that, double-click is silent: a Terminal window
+  flashes for a moment, then the CFO Helper window appears.
+  Drag the `.command` file to your Dock's right side (the "files" half)
+  for a permanent shortcut, or right-click → Make Alias and drop the
+  alias on your Desktop.
+- **Windows:** double-click [`dist/windows/CFOHelper.vbs`](dist/windows/CFOHelper.vbs).
+  Right-click → "Send to → Desktop (create shortcut)" to put it on
+  your desktop. Same first-launch install behavior as macOS.
+
+A window opens, shows a "starting…" spinner for a few seconds, then
+loads the dashboard. **Close the window to stop the server** — the
+launcher is the lifetime of the app, not a background daemon.
+
+Pages:
 
 | Path | Purpose |
 |---|---|
@@ -165,18 +201,28 @@ Open http://localhost:8765. Pages:
 | `/schedules` | Cron entries that fire to instantiate tasks |
 | `/memory-proposals` | CFO approval queue for AI-proposed memory writes |
 
-**Survivability (auto-start on login):**
+### Run from terminal (developers)
+
+If you want to run uvicorn directly — for hot-reload, debugger
+attachment, or custom flags — bypass the launcher:
 
 ```bash
-cp docs/launchd/cfo-helper.plist ~/Library/LaunchAgents/com.cfohelper.dashboard.plist
-sed -i '' "s|REPLACE_REPO|$(pwd)|g" ~/Library/LaunchAgents/com.cfohelper.dashboard.plist
-launchctl load ~/Library/LaunchAgents/com.cfohelper.dashboard.plist
+# macOS / Linux
+.venv/bin/uvicorn web.main:app --port 8765 --reload
 ```
+
+```powershell
+# Windows (PowerShell)
+.venv\Scripts\uvicorn web.main:app --port 8765 --reload
+```
+
+Then visit http://localhost:8765 in any browser.
 
 ## Draining the Forge queue
 
 When the dashboard shows pending queue items, open this repo in VS Code,
-open Claude Code (`cmd-shift-P → "Claude Code: Open"`), and run:
+open Claude Code (`cmd-shift-P` on macOS, `ctrl-shift-P` on Windows →
+`"Claude Code: Open"`), and run:
 
 ```
 /run-queue

@@ -59,7 +59,7 @@ async def lifespan(_app: FastAPI):
     if workers != "1":
         _log.warning(
             "WEB_CONCURRENCY=%s: dashboard assumes single uvicorn worker; "
-            "multi-worker invalidates the JSON DB flock + SSE hub.",
+            "multi-worker invalidates the JSON DB file lock + SSE hub.",
             workers,
         )
     db.init_db()
