@@ -25,7 +25,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from web import db, scheduler, sse
+from web import db, errors, scheduler, sse, supervisor
 
 _log = logging.getLogger("web.main")
 
@@ -66,7 +66,9 @@ async def lifespan(_app: FastAPI):
     sse.hub.attach_loop(asyncio.get_running_loop())
     sse.start_observer()
     scheduler.start_scheduler()
+    supervisor.start_supervisor()
     yield
+    supervisor.stop_supervisor()
     scheduler.stop_scheduler()
     sse.stop_observer()
 
@@ -79,6 +81,7 @@ app.mount(
 )
 
 _discover_routers(app)
+errors.register_exception_handlers(app)
 
 
 @app.get("/events")
