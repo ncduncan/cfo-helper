@@ -96,3 +96,20 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def _on_exception(request: Request, exc: Exception) -> Response:
         return await _handle(request, exc)
+
+
+def safe_scheduler_reload() -> bool:
+    """Call scheduler.reload(); swallow and log any exception.
+
+    Returns True on success, False if reload raised. The supervisor will
+    restart the scheduler if it is genuinely dead; the DB write that
+    preceded this call is the source of truth either way.
+    """
+    from web import scheduler
+
+    try:
+        scheduler.reload()
+        return True
+    except Exception:
+        _log.exception("scheduler.reload() failed; supervisor will retry")
+        return False

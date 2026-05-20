@@ -97,3 +97,29 @@ def test_message_is_truncated_at_200_chars():
     detail = r.json()["detail"]
     assert len(detail) <= 200
     assert detail.endswith("…")
+
+
+def test_safe_scheduler_reload_returns_true_on_success(monkeypatch):
+    from web import errors, scheduler
+
+    called = {"n": 0}
+
+    def fake_reload():
+        called["n"] += 1
+
+    monkeypatch.setattr(scheduler, "reload", fake_reload)
+    assert errors.safe_scheduler_reload() is True
+    assert called["n"] == 1
+
+
+def test_safe_scheduler_reload_swallows_exception_and_logs(monkeypatch, caplog):
+    from web import errors, scheduler
+
+    def boom():
+        raise RuntimeError("scheduler is angry")
+
+    monkeypatch.setattr(scheduler, "reload", boom)
+    with caplog.at_level("ERROR", logger="web.errors"):
+        result = errors.safe_scheduler_reload()
+    assert result is False
+    assert any("scheduler.reload()" in rec.message for rec in caplog.records)
