@@ -76,7 +76,7 @@
           {% elif s.instance.status == 'in_progress' %}<span class="text-sky-700">in_progress</span>
           {% elif s.live_queue_row %}
             <span class="text-amber-700">{{ s.live_queue_row.status }}</span>
-            <a href="/queue/{{ s.live_queue_row.id }}/bundle" class="text-xs text-sky-700 hover:underline ml-1">bundle →</a>
+            <a href="/queue/{{ s.live_queue_row.id }}" class="text-xs text-sky-700 hover:underline ml-1">bundle →</a>
           {% else %}<span class="text-slate-500">{{ s.instance.status }}</span>{% endif %}
         </div>
       </div>

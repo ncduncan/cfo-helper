@@ -112,8 +112,7 @@ async def list_queue_fragment(request: Request):
 # --- bundle viewer ----------------------------------------------------------
 
 
-@router.get("/{queue_id}/bundle")
-async def serve_bundle(queue_id: str):
+def _load_bundle(queue_id: str) -> tuple[dict[str, Any], str]:
     row = db.find("queue", queue_id)
     if row is None:
         raise HTTPException(status_code=404, detail="queue item not found")
@@ -123,8 +122,29 @@ async def serve_bundle(queue_id: str):
     abs_path = _resolve_bundle_path(rel)
     if not abs_path.exists():
         raise HTTPException(status_code=404, detail="bundle file missing on disk")
+    return row, abs_path.read_text()
+
+
+@router.get("/{queue_id}", response_class=HTMLResponse)
+async def view_bundle(request: Request, queue_id: str):
+    row, content = _load_bundle(queue_id)
+    return TEMPLATES.TemplateResponse(
+        request,
+        "queue/bundle.html",
+        {
+            "queue_id": queue_id,
+            "task_id": row.get("task_id"),
+            "step_id": row.get("step_id"),
+            "content": content,
+        },
+    )
+
+
+@router.get("/{queue_id}/bundle")
+async def serve_bundle(queue_id: str):
+    _row, content = _load_bundle(queue_id)
     return Response(
-        content=abs_path.read_text(),
+        content=content,
         media_type="text/markdown; charset=utf-8",
     )
 

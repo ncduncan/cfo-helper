@@ -167,8 +167,25 @@ def test_bundle_view_returns_markdown(client, db_in_tmp, repo_in_tmp):
     assert "step_id: s2" in r.text
 
 
+def test_bundle_html_view_has_nav_back_to_queue(client, db_in_tmp, repo_in_tmp):
+    qid = _seed(db_in_tmp, repo_in_tmp)
+    r = client.get(f"/queue/{qid}")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/html")
+    # base.html chrome present
+    assert "CFO Helper" in r.text
+    assert 'href="/"' in r.text
+    # back-to-queue affordance + raw-download link
+    assert "Back to queue" in r.text
+    assert f'href="/queue/{qid}/bundle"' in r.text
+    # bundle content rendered inside the page
+    assert "task_id: t-q" in r.text
+
+
 def test_bundle_view_404_unknown_id(client):
     r = client.get("/queue/q-nope/bundle")
+    assert r.status_code == 404
+    r = client.get("/queue/q-nope")
     assert r.status_code == 404
 
 

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Queue bundle — CFO Helper{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-center justify-between">
+  <div>
+    <nav class="text-xs text-slate-500 mb-1">
+      <a href="/queue" class="hover:underline">Forge Queue</a>
+      <span class="mx-1">/</span>
+      <span class="font-mono">{{ queue_id }}</span>
+    </nav>
+    <h1 class="text-2xl font-semibold">Bundle preview</h1>
+    {% if task_id %}
+    <p class="text-sm text-slate-600">
+      Task <a href="/tasks/{{ task_id }}" class="font-mono hover:underline">{{ task_id }}</a>
+      {% if step_id %} · step <span class="font-mono">{{ step_id }}</span>{% endif %}
+    </p>
+    {% endif %}
+  </div>
+  <div class="flex items-center gap-2 text-sm">
+    <a href="/queue"
+       class="px-3 py-1.5 rounded border border-slate-300 hover:bg-slate-100">← Back to queue</a>
+    <a href="/queue/{{ queue_id }}/bundle"
+       class="px-3 py-1.5 rounded border border-slate-300 hover:bg-slate-100">Download .md</a>
+  </div>
+</div>
+
+<pre class="whitespace-pre-wrap break-words text-xs font-mono p-4 bg-white border border-slate-200 rounded">{{ content }}</pre>
+{% endblock %}

@@ -48,7 +48,7 @@
           </td>
           <td class="px-4 py-2 text-slate-600 text-xs">{{ r.queued_at[:19] }}</td>
           <td class="px-4 py-2 text-right">
-            <a href="/queue/{{ r.id }}/bundle"
+            <a href="/queue/{{ r.id }}"
                class="text-emerald-700 hover:underline mr-3">view bundle</a>
             {% if r.status == "pending" %}
             <form action="/queue/{{ r.id }}/cancel" method="post" class="inline">
@@ -107,7 +107,7 @@
           <td class="px-4 py-2 text-slate-600 text-xs">{{ (r.completed_at or '')[:19] }}</td>
           <td class="px-4 py-2 text-slate-700 text-xs">{{ r.error or "" }}</td>
           <td class="px-4 py-2 text-right">
-            <a href="/queue/{{ r.id }}/bundle"
+            <a href="/queue/{{ r.id }}"
                class="text-emerald-700 hover:underline mr-3">view bundle</a>
             {% if r.status == "failed" %}
             <form action="/queue/{{ r.id }}/retry" method="post" class="inline">
