@@ -169,3 +169,62 @@ async def test_supervisor_restarts_dead_scheduler(monkeypatch):
 
     await supervisor.run_one_tick()
     assert calls["start"] == 1
+
+
+def test_schedule_update_survives_broken_reload(tmp_path, monkeypatch):
+    """POST /schedules/<id> should return success even if scheduler.reload raises."""
+    from web import db as db_mod
+    from web import errors, scheduler as scheduler_mod
+    from web.routes import schedules as schedules_routes
+
+    # Isolate the DB into tmpdir.
+    monkeypatch.setattr(db_mod, "DB_DIR", tmp_path / "db")
+    db_mod.init_db()
+
+    # Seed a standard_work and a schedule.
+    from datetime import datetime, timezone
+    now_iso = datetime(2026, 5, 16, tzinfo=timezone.utc).isoformat()
+    db_mod.insert("standard_work", {
+        "id": "sw1", "name": "SW", "source_task_type": None,
+        "owner_role": "fpa", "cadence": None, "context_md": "",
+        "requirements_md": "", "due_offset_days": 0, "steps": [],
+        "created_at": now_iso, "updated_at": now_iso,
+    })
+    db_mod.insert("schedules", {
+        "id": "s1", "name": "S1", "standard_work_id": "sw1",
+        "cron": "0 9 1 * *", "enabled": True, "brief_template": {},
+        "created_at": now_iso, "last_fire": None, "last_fire_result": None,
+    })
+
+    # Make scheduler.reload() blow up.
+    def boom():
+        raise RuntimeError("scheduler is having a bad day")
+    monkeypatch.setattr(scheduler_mod, "reload", boom)
+
+    # Mount the route.
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    app = FastAPI()
+    app.include_router(schedules_routes.router)
+    errors.register_exception_handlers(app)
+    client = TestClient(app, follow_redirects=False)
+
+    r = client.post(
+        "/schedules/s1",
+        data={
+            "name": "S1 updated",
+            "standard_work_id": "sw1",
+            "frequency": "monthly",
+            "hour": "9", "minute": "0",
+            "day_of_week": "1", "day_of_month": "1", "month": "1",
+            "cron_raw": "",
+            "timezone": "America/New_York",
+            "enabled": "on",
+        },
+    )
+
+    # Route should still return its normal 303 redirect.
+    assert r.status_code == 303
+    # DB write should have stuck.
+    row = db_mod.find("schedules", "s1")
+    assert row["name"] == "S1 updated"

@@ -12,6 +12,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from web import db, scheduler
+from web.errors import safe_scheduler_reload
 from web.ids import unique_id
 from web.models import Schedule
 from web.schedule_spec import build_cron, describe, parse_cron
@@ -159,7 +160,7 @@ async def create(
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
     db.insert("schedules", row)
-    scheduler.reload()
+    safe_scheduler_reload()
     return RedirectResponse(url="/schedules", status_code=303)
 
 
@@ -222,7 +223,7 @@ async def update(
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
     db.upsert("schedules", new)
-    scheduler.reload()
+    safe_scheduler_reload()
     return RedirectResponse(url="/schedules", status_code=303)
 
 
@@ -234,7 +235,7 @@ async def toggle_enabled(sid: str):
     new = {**s, "enabled": not s.get("enabled", True)}
     _validate(new)
     db.upsert("schedules", new)
-    scheduler.reload()
+    safe_scheduler_reload()
     return RedirectResponse(url="/schedules", status_code=303)
 
 
@@ -242,7 +243,7 @@ async def toggle_enabled(sid: str):
 async def delete(sid: str):
     if not db.delete("schedules", sid):
         raise HTTPException(status_code=404, detail="schedule not found")
-    scheduler.reload()
+    safe_scheduler_reload()
     return RedirectResponse(url="/schedules", status_code=303)
 
 
