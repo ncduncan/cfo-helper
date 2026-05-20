@@ -154,6 +154,18 @@ def test_instantiate_due_date_from_offset(db_in_tmp):
     assert t["due_date"].startswith("2026-05-19")
 
 
+def test_instantiate_due_date_zero_offset_is_today(db_in_tmp):
+    from datetime import datetime, timezone
+
+    from web.instantiate import instantiate_task
+
+    _add_sw(db_in_tmp, due_offset_days=0)
+    now = datetime(2026, 5, 20, 17, 0, tzinfo=timezone.utc)
+    t = instantiate_task("sw1", now=now)
+    assert t["due_date"] is not None
+    assert t["due_date"].startswith("2026-05-20")
+
+
 def test_instantiate_owner_override(db_in_tmp):
     from web.instantiate import instantiate_task
 

@@ -125,7 +125,7 @@ def instantiate_task(
 
     if due_date is None:
         offset_days = int(sw.get("due_offset_days") or 0)
-        due_date = when + timedelta(days=offset_days) if offset_days else None
+        due_date = when + timedelta(days=offset_days)
 
     row = {
         "id": task_id,
