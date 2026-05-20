@@ -1,0 +1,19 @@
+default_min_exposure_for_hedging_usd: 250000
+default_target_hedge_ratio: 0.65
+
+currencies:
+  EUR:
+    target_hedge_ratio: 0.65
+    min_exposure_for_hedging_usd: 250000
+  GBP:
+    target_hedge_ratio: 0.65
+    min_exposure_for_hedging_usd: 250000
+  AUD:
+    target_hedge_ratio: 0.65
+    min_exposure_for_hedging_usd: 250000
+  JPY:
+    target_hedge_ratio: 0.65
+    min_exposure_for_hedging_usd: 250000
+  AED:
+    target_hedge_ratio: 0.0
+    notes: "pegged to USD; hedge not warranted"

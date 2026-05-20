@@ -1,0 +1,56 @@
+version: 1
+last_updated: 2026-05-02
+archetypes:
+  tier1:
+    gross_margin_pct: { min: 0.62, target: 0.72, hard_floor: 0.50 }
+    term_months:      { min: 36,   target: 60,   hard_floor: 24 }
+    discount_pct:     { max: 0.15, target: 0.08, hard_cap: 0.25 }
+    payment_terms:    { allowed: [net30, net60, prepay_annual, prepay_full_term] }
+    escalator_pct:    { min: 0.03, target: 0.05 }
+    tcv_usd:          { min: 250000 }
+    ramp_months:      { max: 6,    hard_cap: 12 }
+
+  lessor:
+    gross_margin_pct: { min: 0.55, target: 0.65, hard_floor: 0.45 }
+    term_months:      { min: 24,   target: 36,   hard_floor: 12 }
+    discount_pct:     { max: 0.20, target: 0.10, hard_cap: 0.30 }
+    payment_terms:    { allowed: [net30, net60, net90, prepay_annual] }
+    escalator_pct:    { min: 0.025, target: 0.04 }
+    tcv_usd:          { min: 100000 }
+    ramp_months:      { max: 3,    hard_cap: 6 }
+
+  cargo:
+    gross_margin_pct: { min: 0.55, target: 0.65, hard_floor: 0.45 }
+    term_months:      { min: 24,   target: 36,   hard_floor: 12 }
+    discount_pct:     { max: 0.18, target: 0.10, hard_cap: 0.28 }
+    payment_terms:    { allowed: [net30, net60, prepay_annual] }
+    escalator_pct:    { min: 0.03, target: 0.04 }
+    tcv_usd:          { min: 75000 }
+    ramp_months:      { max: 6,    hard_cap: 12 }
+
+  bga:
+    gross_margin_pct: { min: 0.65, target: 0.75, hard_floor: 0.55 }
+    term_months:      { min: 12,   target: 24,   hard_floor: 12 }
+    discount_pct:     { max: 0.10, target: 0.05, hard_cap: 0.20 }
+    payment_terms:    { allowed: [net30, prepay_annual, prepay_full_term] }
+    escalator_pct:    { min: 0.04, target: 0.05 }
+    tcv_usd:          { min: 25000 }
+    ramp_months:      { max: 1,    hard_cap: 3 }
+
+  military:
+    gross_margin_pct: { min: 0.50, target: 0.60, hard_floor: 0.40 }
+    term_months:      { min: 36,   target: 60,   hard_floor: 24 }
+    discount_pct:     { max: 0.20, target: 0.12, hard_cap: 0.30 }
+    payment_terms:    { allowed: [net30, net60, net90] }
+    escalator_pct:    { min: 0.025, target: 0.035 }
+    tcv_usd:          { min: 500000 }
+    ramp_months:      { max: 12,   hard_cap: 18 }
+
+  channel:
+    gross_margin_pct: { min: 0.40, target: 0.50, hard_floor: 0.30 }
+    term_months:      { min: 12,   target: 36,   hard_floor: 12 }
+    discount_pct:     { max: 0.30, target: 0.20, hard_cap: 0.40 }
+    payment_terms:    { allowed: [net30, net60, net90, prepay_annual] }
+    escalator_pct:    { min: 0.02, target: 0.03 }
+    tcv_usd:          { min: 50000 }
+    ramp_months:      { max: 6,    hard_cap: 12 }

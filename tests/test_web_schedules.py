@@ -158,7 +158,8 @@ def test_update_schedule(client, db_in_tmp):
         data={
             "name": "Renamed",
             "standard_work_id": "sw1",
-            "cron": "*/5 * * * *",
+            "frequency": "custom",
+            "cron_raw": "*/5 * * * *",
             "enabled": "on",
             "period_template": "",
         },

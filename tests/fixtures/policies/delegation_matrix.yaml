@@ -1,0 +1,33 @@
+version: 1
+last_updated: 2026-05-02
+rules:
+  - { dim: tcv_usd, threshold_op: ">=", threshold: 1000000,
+      approvers: [commercial_director] }
+  - { dim: tcv_usd, threshold_op: ">=", threshold: 5000000,
+      approvers: [cfo] }
+  - { dim: tcv_usd, threshold_op: ">=", threshold: 25000000,
+      approvers: [cfo, ceo, ge_aerospace_segment_cfo] }
+
+  - { dim: discount_pct, threshold_op: ">=", threshold: 0.15,
+      approvers: [cro] }
+  - { dim: discount_pct, threshold_op: ">=", threshold: 0.25,
+      approvers: [cfo, cro] }
+  - { dim: discount_pct, threshold_op: ">=", threshold: 0.35,
+      approvers: [cfo, cro, ceo] }
+
+  - { dim: term_months, threshold_op: ">=", threshold: 84,
+      approvers: [cfo] }
+
+  - { dim: archetype, equals: military,
+      approvers: [cfo, segment_counsel] }
+  - { dim: archetype, equals: channel,
+      approvers: [commercial_director, segment_counsel] }
+
+  - { dim: payment_terms, equals: prepay_full_term,
+      approvers: [treasurer] }
+
+  - { dim: ssp_complexity, equals: high,
+      approvers: [chief_accountant] }
+
+  - { dim: hard_breach, equals: true,
+      approvers: [cfo] }

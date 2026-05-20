@@ -256,7 +256,12 @@ def test_pdf_from_markdown(tmp_path: Path):
     md = tmp_path / "sample.md"
     md.write_text("# Sample\n\nBody text.\n")
     from scripts.pdf import to_pdf
-    out = to_pdf(md, tmp_path / "sample.pdf")
+    try:
+        out = to_pdf(md, tmp_path / "sample.pdf")
+    except OSError as e:
+        if "cannot load library" in str(e) or "libgobject" in str(e):
+            pytest.skip(f"WeasyPrint native deps unavailable: {e}")
+        raise
     assert out.exists()
     assert out.stat().st_size > 1_000
 

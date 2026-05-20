@@ -383,8 +383,12 @@ def build(period: str = "2026-05", out: Path | None = None) -> None:
         "account_class": "cogs", "pnl_line": "COGS / Cloud Infrastructure",
     })
     am_path = REPO / "profile" / "memory" / "account_map.json"
-    with am_path.open() as f:
-        am = json.load(f)
+    try:
+        with am_path.open() as f:
+            am = json.load(f)
+    except FileNotFoundError:
+        am = {"version": 1, "entries": []}
+        am_path.parent.mkdir(parents=True, exist_ok=True)
     am["entries"] = map_entries
     with am_path.open("w") as f:
         json.dump(am, f, indent=2)

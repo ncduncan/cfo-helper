@@ -11,17 +11,18 @@ import yaml
 from scripts import underwriting as uw
 
 REPO = Path(__file__).resolve().parent.parent
+POLICIES = REPO / "tests" / "fixtures" / "policies"
 
 
 @pytest.fixture(scope="module")
 def strikezone():
-    with (REPO / "profile" / "memory" / "strikezone.yaml").open() as f:
+    with (POLICIES / "strikezone.yaml").open() as f:
         return yaml.safe_load(f)
 
 
 @pytest.fixture(scope="module")
 def matrix():
-    with (REPO / "profile" / "memory" / "delegation_matrix.yaml").open() as f:
+    with (POLICIES / "delegation_matrix.yaml").open() as f:
         return yaml.safe_load(f)
 
 

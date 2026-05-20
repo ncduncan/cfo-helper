@@ -20,6 +20,6 @@ jobs:
       - name: Install uv
         run: pip install uv
       - name: Install project + dev deps
-        run: uv pip install --system -e . pytest pytest-cov
+        run: uv pip install --system -e . pytest pytest-cov pytest-asyncio
       - name: Run pytest
         run: pytest -q

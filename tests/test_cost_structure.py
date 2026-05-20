@@ -11,23 +11,24 @@ import yaml
 from scripts import cost_structure as cs
 
 REPO = Path(__file__).resolve().parent.parent
+POLICIES = REPO / "tests" / "fixtures" / "policies"
 
 
 @pytest.fixture(scope="module")
 def categories():
-    with (REPO / "profile" / "memory" / "cost_categories.yaml").open() as f:
+    with (POLICIES / "cost_categories.yaml").open() as f:
         return yaml.safe_load(f)
 
 
 @pytest.fixture(scope="module")
 def cap_policy():
-    with (REPO / "profile" / "memory" / "capitalization_policy.yaml").open() as f:
+    with (POLICIES / "capitalization_policy.yaml").open() as f:
         return yaml.safe_load(f)
 
 
 @pytest.fixture(scope="module")
 def kpis():
-    with (REPO / "profile" / "memory" / "operational_kpis.yaml").open() as f:
+    with (POLICIES / "operational_kpis.yaml").open() as f:
         return yaml.safe_load(f)
 
 

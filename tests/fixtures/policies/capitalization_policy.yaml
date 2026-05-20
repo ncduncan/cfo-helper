@@ -1,0 +1,21 @@
+version: 1
+last_updated: 2026-05-02
+internal_use_software:
+  capitalize_after_stage: application_development
+  minimum_project_threshold_usd: 100000
+  amortization_method: straight_line
+  default_useful_life_months: 36
+sale_of_software:
+  capitalize_after: technological_feasibility
+  amortization_method: straight_line
+  default_useful_life_months: 60
+commissions:
+  capitalize: true
+  amortization_period_basis: expected_customer_life
+  default_amortization_months_by_archetype:
+    tier1: 84
+    lessor: 60
+    cargo: 60
+    bga: 36
+    military: 84
+    channel: 36

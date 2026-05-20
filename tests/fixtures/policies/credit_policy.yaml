@@ -1,0 +1,40 @@
+version: 1
+last_updated: 2026-05-02
+cost_of_capital_annual: 0.10
+prepay_incentive_default_discount_pct: 0.05
+archetypes:
+  tier1:
+    dso_target_days: 35
+    watchlist_dso_excess_days: 15
+    watchlist_aged_balance_threshold_usd: 250000
+    watchlist_min_aged_bucket_days: 90
+  lessor:
+    dso_target_days: 30
+    watchlist_dso_excess_days: 10
+    watchlist_aged_balance_threshold_usd: 100000
+    watchlist_min_aged_bucket_days: 60
+  cargo:
+    dso_target_days: 45
+    watchlist_dso_excess_days: 20
+    watchlist_aged_balance_threshold_usd: 50000
+    watchlist_min_aged_bucket_days: 90
+  bga:
+    dso_target_days: 30
+    watchlist_dso_excess_days: 15
+    watchlist_aged_balance_threshold_usd: 25000
+    watchlist_min_aged_bucket_days: 60
+  military:
+    dso_target_days: 90
+    watchlist_dso_excess_days: 30
+    watchlist_aged_balance_threshold_usd: 500000
+    watchlist_min_aged_bucket_days: 120
+  channel:
+    dso_target_days: 60
+    watchlist_dso_excess_days: 20
+    watchlist_aged_balance_threshold_usd: 100000
+    watchlist_min_aged_bucket_days: 90
+  unknown:
+    dso_target_days: 45
+    watchlist_dso_excess_days: 20
+    watchlist_aged_balance_threshold_usd: 100000
+    watchlist_min_aged_bucket_days: 90

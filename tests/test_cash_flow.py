@@ -12,17 +12,18 @@ import yaml
 from scripts import cash_flow as cf
 
 REPO = Path(__file__).resolve().parent.parent
+POLICIES = REPO / "tests" / "fixtures" / "policies"
 
 
 @pytest.fixture(scope="module")
 def credit_policy():
-    with (REPO / "profile" / "memory" / "credit_policy.yaml").open() as f:
+    with (POLICIES / "credit_policy.yaml").open() as f:
         return yaml.safe_load(f)
 
 
 @pytest.fixture(scope="module")
 def hedge_policy():
-    with (REPO / "profile" / "memory" / "fx_hedge_policy.yaml").open() as f:
+    with (POLICIES / "fx_hedge_policy.yaml").open() as f:
         return yaml.safe_load(f)
 
 

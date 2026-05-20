@@ -1,0 +1,44 @@
+version: 1
+last_updated: 2026-05-02
+archetypes:
+  vendor_cogs:
+    description: "Direct cost of service."
+    account_ranges: [["5000", "5199"]]
+  services_cost:
+    description: "Cost of services delivery."
+    account_ranges: [["5200", "5299"]]
+  people:
+    description: "Salary, bonus, benefits, contractors."
+    account_ranges: [["6000", "6199"]]
+  vendor_opex:
+    description: "Software subscriptions, marketing, travel, professional services."
+    account_ranges: [["6200", "6499"]]
+  infra:
+    description: "IT infra, security, internal tooling."
+    account_ranges: [["6500", "6699"]]
+  capex_software:
+    description: "Capitalized internal-use software (ASC 350-40)."
+    account_ranges: [["1750", "1759"]]
+    policy_ref: capitalization_policy.internal_use_software
+  capex_commission:
+    description: "Capitalized contract acquisition costs (ASC 340-40)."
+    account_ranges: [["1760", "1769"]]
+    policy_ref: capitalization_policy.commissions
+  fx:
+    description: "FX gains / losses."
+    account_ranges: [["8900", "8999"]]
+  allocations:
+    description: "Allocated corporate / parent-segment costs."
+    account_ranges: [["9000", "9099"]]
+excluded:
+  description: "Accounts the engine intentionally skips."
+  account_ranges:
+    - ["1000", "1199"]
+    - ["1200", "1299"]
+    - ["1300", "1399"]
+    - ["1400", "1749"]
+    - ["1770", "3999"]
+    - ["4000", "4999"]
+    - ["5300", "5999"]
+    - ["6700", "8899"]
+    - ["9100", "9999"]
