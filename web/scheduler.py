@@ -53,8 +53,9 @@ def _register(s: dict[str, Any]) -> None:
     if not cron:
         _log.warning("schedule %r missing cron expression; skipping", s.get("id"))
         return
+    tz = s.get("timezone") or "America/New_York"
     try:
-        trigger = CronTrigger.from_crontab(cron, timezone="UTC")
+        trigger = CronTrigger.from_crontab(cron, timezone=tz)
     except Exception as exc:
         _log.warning(
             "schedule %r has invalid cron %r: %s", s.get("id"), cron, exc

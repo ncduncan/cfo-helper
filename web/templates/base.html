@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}CFO Helper — Team Console{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
@@ -14,8 +15,14 @@
       sse-connect="/events">
   <nav class="bg-white border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
-      <a href="/" class="font-semibold text-lg text-slate-900">
-        CFO Helper
+      <a href="/" class="flex items-center gap-2 font-semibold text-lg text-slate-900">
+        <svg viewBox="0 0 24 24" class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 4.5 H4.25 V19.5 H6"/>
+          <path d="M18 4.5 H19.75 V19.5 H18"/>
+          <path d="M13.5 7 H11 Q10.5 7 10.5 7.75 V17 Q10.5 18.75 8.75 18.75"/>
+          <path d="M7.75 12 H13"/>
+        </svg>
+        <span>CFO Helper</span>
       </a>
       <div class="flex items-center gap-1 text-sm">
         <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-100">Home</a>

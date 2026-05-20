@@ -6,23 +6,32 @@
   <a href="/schedules" class="text-sm text-slate-600 hover:underline">cancel</a>
 </div>
 
-<form action="{% if is_new %}/schedules{% else %}/schedules/{{ item.id }}{% endif %}"
+{% set freq = spec.frequency or 'monthly' %}
+{% set hh = '%02d' % (spec.hour if spec.hour is not none else 9) %}
+{% set mm = '%02d' % (spec.minute if spec.minute is not none else 0) %}
+{% set dow = spec.day_of_week if spec.day_of_week is not none else 1 %}
+{% set dom = spec.day_of_month if spec.day_of_month is not none else 1 %}
+{% set mon = spec.month if spec.month is not none else 1 %}
+{% set tz = (item.timezone if item and item.timezone else 'America/New_York') %}
+
+<form id="schedule-form"
+      action="{% if is_new %}/schedules{% else %}/schedules/{{ item.id }}{% endif %}"
       method="post"
-      class="bg-white rounded border border-slate-200 p-6 max-w-2xl space-y-4">
-  {% if is_new %}
+      class="bg-white rounded border border-slate-200 p-6 max-w-2xl space-y-5">
+  {% if not is_new %}
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">ID</label>
-    <input type="text" name="id" required maxlength="64"
-           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
-           placeholder="s-monthly-close"/>
+    <div class="text-sm text-slate-700 font-mono">{{ item.id }}<span class="text-xs text-slate-500 ml-2">(auto-generated, immutable)</span></div>
   </div>
   {% endif %}
+
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
     <input type="text" name="name" required
            value="{{ item.name if item else '' }}"
            class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
   </div>
+
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Standard work template</label>
     <select name="standard_work_id" required class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
@@ -31,27 +40,111 @@
       {% endfor %}
     </select>
   </div>
-  <div>
-    <label class="block text-sm font-medium text-slate-700 mb-1">Cron expression</label>
-    <input type="text" name="cron" required
-           value="{{ item.cron if item else '' }}"
-           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
-           placeholder="0 9 1 * *"/>
-    <div class="text-xs text-slate-500 mt-1">Standard 5-field cron. UTC.</div>
-  </div>
+
+  <fieldset class="border border-slate-200 rounded p-4 space-y-4">
+    <legend class="px-2 text-sm font-medium text-slate-700">When does it run?</legend>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Frequency</label>
+        <select id="freq" name="frequency" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+          <option value="daily"     {% if freq == 'daily'     %}selected{% endif %}>Daily</option>
+          <option value="weekly"    {% if freq == 'weekly'    %}selected{% endif %}>Weekly</option>
+          <option value="monthly"   {% if freq == 'monthly'   %}selected{% endif %}>Monthly</option>
+          <option value="quarterly" {% if freq == 'quarterly' %}selected{% endif %}>Quarterly (Jan/Apr/Jul/Oct)</option>
+          <option value="yearly"    {% if freq == 'yearly'    %}selected{% endif %}>Yearly</option>
+          <option value="custom"    {% if freq == 'custom'    %}selected{% endif %}>Advanced (cron)</option>
+        </select>
+      </div>
+
+      <div data-when="daily weekly monthly quarterly yearly">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Time of day</label>
+        <input id="time" type="time" value="{{ hh }}:{{ mm }}"
+               class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm"/>
+        <input type="hidden" name="hour"   id="hour"   value="{{ hh|int }}"/>
+        <input type="hidden" name="minute" id="minute" value="{{ mm|int }}"/>
+      </div>
+    </div>
+
+    <div data-when="weekly">
+      <label class="block text-sm font-medium text-slate-700 mb-1">Day of week</label>
+      <select name="day_of_week" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        {% set dows = [(0,'Sunday'),(1,'Monday'),(2,'Tuesday'),(3,'Wednesday'),(4,'Thursday'),(5,'Friday'),(6,'Saturday')] %}
+        {% for v, label in dows %}
+        <option value="{{ v }}" {% if dow == v %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div data-when="monthly quarterly yearly">
+      <label class="block text-sm font-medium text-slate-700 mb-1">Day of month</label>
+      <select name="day_of_month" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        {% for d in range(1, 32) %}
+        <option value="{{ d }}" {% if dom == d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+      <div class="text-xs text-slate-500 mt-1" data-when="monthly quarterly yearly">
+        Days 29–31 will skip months that don't have that day.
+      </div>
+    </div>
+
+    <div data-when="yearly">
+      <label class="block text-sm font-medium text-slate-700 mb-1">Month</label>
+      <select name="month" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        {% set months = [(1,'January'),(2,'February'),(3,'March'),(4,'April'),(5,'May'),(6,'June'),(7,'July'),(8,'August'),(9,'September'),(10,'October'),(11,'November'),(12,'December')] %}
+        {% for v, label in months %}
+        <option value="{{ v }}" {% if mon == v %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div data-when="custom">
+      <label class="block text-sm font-medium text-slate-700 mb-1">Cron expression</label>
+      <input type="text" name="cron_raw"
+             value="{% if freq == 'custom' %}{{ item.cron if item else '' }}{% endif %}"
+             class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
+             placeholder="0 9 1 * *"/>
+      <div class="text-xs text-slate-500 mt-1">
+        Standard 5-field cron: <span class="font-mono">minute hour day-of-month month day-of-week</span>.
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
+      <select name="timezone" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm">
+        {% set tzs = [
+          ('America/New_York','Eastern (New York)'),
+          ('America/Chicago','Central (Chicago)'),
+          ('America/Denver','Mountain (Denver)'),
+          ('America/Los_Angeles','Pacific (Los Angeles)'),
+          ('UTC','UTC'),
+        ] %}
+        {% for v, label in tzs %}
+        <option value="{{ v }}" {% if tz == v %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <div class="text-xs text-slate-500 mt-1">DST is handled automatically.</div>
+    </div>
+
+    <div id="schedule-preview" class="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded px-3 py-2"></div>
+  </fieldset>
+
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Period template (optional)</label>
     <input type="text" name="period_template"
            value="{{ item.brief_template.period if item and item.brief_template and item.brief_template.period else '' }}"
            class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
            placeholder="{this_month} or {previous_month}"/>
+    <div class="text-xs text-slate-500 mt-1">Token used when instantiating the task brief.</div>
   </div>
+
   <div>
     <label class="inline-flex items-center text-sm">
       <input type="checkbox" name="enabled" {% if not item or item.enabled %}checked{% endif %}/>
       <span class="ml-2">Enabled</span>
     </label>
   </div>
+
   <div class="pt-2">
     <button type="submit"
             class="bg-slate-900 text-white text-sm rounded px-4 py-2 hover:bg-slate-700">
@@ -59,4 +152,89 @@
     </button>
   </div>
 </form>
+
+<script>
+(function () {
+  var form = document.getElementById("schedule-form");
+  if (!form) return;
+  var freqSel = document.getElementById("freq");
+  var timeInp = document.getElementById("time");
+  var hourInp = document.getElementById("hour");
+  var minInp  = document.getElementById("minute");
+  var preview = document.getElementById("schedule-preview");
+
+  var DOW = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var MON = ["","January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  function ord(n) {
+    var s = ["th","st","nd","rd"], v = n % 100;
+    return n + (s[(v-20)%10] || s[v] || s[0]);
+  }
+  function fmtTime(h, m) {
+    var suf = h < 12 ? "AM" : "PM";
+    var h12 = (h % 12) || 12;
+    return h12 + ":" + (m < 10 ? "0" : "") + m + " " + suf;
+  }
+  function tzLabel(v) {
+    return {
+      "America/New_York": "ET",
+      "America/Chicago": "CT",
+      "America/Denver": "MT",
+      "America/Los_Angeles": "PT",
+      "UTC": "UTC"
+    }[v] || v;
+  }
+
+  function showHide() {
+    var f = freqSel.value;
+    form.querySelectorAll("[data-when]").forEach(function (el) {
+      var matches = el.getAttribute("data-when").split(/\s+/).indexOf(f) !== -1;
+      el.style.display = matches ? "" : "none";
+    });
+  }
+
+  function syncTime() {
+    var v = (timeInp.value || "09:00").split(":");
+    hourInp.value = parseInt(v[0], 10) || 0;
+    minInp.value  = parseInt(v[1], 10) || 0;
+  }
+
+  function val(name) {
+    var el = form.querySelector("[name='" + name + "']");
+    return el ? el.value : "";
+  }
+
+  function buildPreview() {
+    syncTime();
+    var f = freqSel.value;
+    var h = parseInt(hourInp.value, 10) || 0;
+    var m = parseInt(minInp.value, 10) || 0;
+    var tz = tzLabel(val("timezone"));
+    var t = fmtTime(h, m);
+    var msg = "";
+    if (f === "daily") {
+      msg = "Daily at " + t + " " + tz;
+    } else if (f === "weekly") {
+      msg = "Weekly on " + DOW[parseInt(val("day_of_week"), 10) || 0] + " at " + t + " " + tz;
+    } else if (f === "monthly") {
+      msg = "Monthly on the " + ord(parseInt(val("day_of_month"), 10) || 1) + " at " + t + " " + tz;
+    } else if (f === "quarterly") {
+      msg = "Quarterly (Jan/Apr/Jul/Oct) on the " + ord(parseInt(val("day_of_month"), 10) || 1) + " at " + t + " " + tz;
+    } else if (f === "yearly") {
+      msg = "Yearly on " + MON[parseInt(val("month"), 10) || 1] + " " + ord(parseInt(val("day_of_month"), 10) || 1) + " at " + t + " " + tz;
+    } else if (f === "custom") {
+      var raw = (val("cron_raw") || "").trim();
+      msg = raw ? ("Custom cron: " + raw + " (" + tz + ")") : "Enter a 5-field cron expression.";
+    }
+    preview.textContent = "Preview — " + msg;
+  }
+
+  freqSel.addEventListener("change", function () { showHide(); buildPreview(); });
+  form.addEventListener("input", buildPreview);
+  form.addEventListener("change", buildPreview);
+
+  showHide();
+  buildPreview();
+})();
+</script>
 {% endblock %}

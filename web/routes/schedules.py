@@ -12,7 +12,9 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from web import db, scheduler
+from web.ids import unique_id
 from web.models import Schedule
+from web.schedule_spec import build_cron, describe, parse_cron
 
 
 router = APIRouter(prefix="/schedules")
@@ -31,7 +33,12 @@ def _validate(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def _sorted_list() -> list[dict[str, Any]]:
-    return sorted(db.rows("schedules"), key=lambda r: r.get("name", "").lower())
+    rows = sorted(db.rows("schedules"), key=lambda r: r.get("name", "").lower())
+    for r in rows:
+        r["cadence_label"] = describe(
+            r.get("cron", ""), r.get("timezone", "America/New_York")
+        )
+    return rows
 
 
 def _sw_list() -> list[dict[str, Any]]:
@@ -60,30 +67,87 @@ async def list_fragment(request: Request):
 # --- create -----------------------------------------------------------------
 
 
+def _spec_from_item(item: dict[str, Any] | None) -> dict[str, Any]:
+    """Build the form-spec dict the edit template uses to prefill controls."""
+    if not item:
+        return {"frequency": "monthly", "hour": 9, "minute": 0, "day_of_month": 1}
+    parsed = parse_cron(item.get("cron", ""))
+    if parsed is None:
+        return {"frequency": "custom", "hour": 9, "minute": 0}
+    return parsed
+
+
+def _resolve_cron(
+    frequency: str,
+    hour: str,
+    minute: str,
+    day_of_week: str,
+    day_of_month: str,
+    month: str,
+    cron_raw: str,
+) -> str:
+    spec = {
+        "frequency": frequency,
+        "hour": hour,
+        "minute": minute,
+        "day_of_week": day_of_week,
+        "day_of_month": day_of_month,
+        "month": month,
+        "cron": cron_raw,
+    }
+    built = build_cron(spec).strip()
+    if not built:
+        raise HTTPException(
+            status_code=400,
+            detail="A cron expression is required (use Advanced mode if frequency is Custom).",
+        )
+    return built
+
+
 @router.get("/new", response_class=HTMLResponse)
 async def new_form(request: Request):
     return TEMPLATES.TemplateResponse(
         request,
         "schedules/edit.html",
-        {"item": None, "is_new": True, "sw_list": _sw_list()},
+        {
+            "item": None,
+            "is_new": True,
+            "sw_list": _sw_list(),
+            "spec": _spec_from_item(None),
+        },
     )
 
 
 @router.post("")
 async def create(
     request: Request,
-    id: str = Form(...),
     name: str = Form(...),
     standard_work_id: str = Form(...),
-    cron: str = Form(...),
+    frequency: str = Form("monthly"),
+    hour: str = Form("9"),
+    minute: str = Form("0"),
+    day_of_week: str = Form("1"),
+    day_of_month: str = Form("1"),
+    month: str = Form("1"),
+    cron_raw: str = Form(""),
+    timezone: str = Form("America/New_York"),
     enabled: str = Form(""),
     period_template: str = Form(""),
 ):
+    cron = _resolve_cron(
+        frequency, hour, minute, day_of_week, day_of_month, month, cron_raw
+    )
+    clean_name = name.strip()
     row = {
-        "id": id.strip(),
-        "name": name.strip(),
+        "id": unique_id(
+            clean_name,
+            (r["id"] for r in db.rows("schedules")),
+            fallback="schedule",
+        ),
+        "name": clean_name,
         "standard_work_id": standard_work_id.strip(),
-        "cron": cron.strip(),
+        "cron": cron,
+        "timezone": timezone.strip() or "America/New_York",
         "enabled": bool(enabled),
         "brief_template": (
             {"period": period_template.strip()} if period_template.strip() else {}
@@ -94,10 +158,7 @@ async def create(
         row = _validate(row)
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
-    try:
-        db.insert("schedules", row)
-    except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+    db.insert("schedules", row)
     scheduler.reload()
     return RedirectResponse(url="/schedules", status_code=303)
 
@@ -113,7 +174,12 @@ async def edit_form(request: Request, sid: str):
     return TEMPLATES.TemplateResponse(
         request,
         "schedules/edit.html",
-        {"item": s, "is_new": False, "sw_list": _sw_list()},
+        {
+            "item": s,
+            "is_new": False,
+            "sw_list": _sw_list(),
+            "spec": _spec_from_item(s),
+        },
     )
 
 
@@ -123,18 +189,29 @@ async def update(
     sid: str,
     name: str = Form(...),
     standard_work_id: str = Form(...),
-    cron: str = Form(...),
+    frequency: str = Form("monthly"),
+    hour: str = Form("9"),
+    minute: str = Form("0"),
+    day_of_week: str = Form("1"),
+    day_of_month: str = Form("1"),
+    month: str = Form("1"),
+    cron_raw: str = Form(""),
+    timezone: str = Form("America/New_York"),
     enabled: str = Form(""),
     period_template: str = Form(""),
 ):
     s = db.find("schedules", sid)
     if s is None:
         raise HTTPException(status_code=404, detail="schedule not found")
+    cron = _resolve_cron(
+        frequency, hour, minute, day_of_week, day_of_month, month, cron_raw
+    )
     new = {
         **s,
         "name": name.strip(),
         "standard_work_id": standard_work_id.strip(),
-        "cron": cron.strip(),
+        "cron": cron,
+        "timezone": timezone.strip() or "America/New_York",
         "enabled": bool(enabled),
         "brief_template": (
             {"period": period_template.strip()} if period_template.strip() else {}

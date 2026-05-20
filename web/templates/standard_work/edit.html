@@ -12,12 +12,10 @@
 <form action="{% if is_new %}/standard-work{% else %}/standard-work/{{ item.id }}{% endif %}"
       method="post"
       class="bg-white rounded border border-slate-200 p-6 max-w-3xl space-y-4">
-  {% if is_new %}
+  {% if not is_new %}
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">ID</label>
-    <input type="text" name="id" required pattern="[a-z0-9][a-z0-9_-]*" maxlength="64"
-           class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"
-           placeholder="monthly_close"/>
+    <div class="text-sm text-slate-700 font-mono">{{ item.id }}<span class="text-xs text-slate-500 ml-2">(auto-generated, immutable)</span></div>
   </div>
   {% endif %}
   <div>

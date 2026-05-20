@@ -116,30 +116,30 @@ def test_create_schedule(client, db_in_tmp):
     r = client.post(
         "/schedules",
         data={
-            "id": "s-monthly",
             "name": "Monthly close",
             "standard_work_id": "sw1",
-            "cron": "0 9 1 * *",
             "enabled": "on",
             "period_template": "{previous_month}",
         },
         follow_redirects=False,
     )
     assert r.status_code == 303
-    row = db_in_tmp.find("schedules", "s-monthly")
+    row = db_in_tmp.find("schedules", "monthly_close")
+    assert row is not None
     assert row["cron"] == "0 9 1 * *"
     assert row["brief_template"]["period"] == "{previous_month}"
 
 
-def test_create_rejects_bad_id(client, db_in_tmp):
+def test_create_appends_suffix_on_name_collision(client, db_in_tmp):
     _add_sw(db_in_tmp)
-    # Missing required field (cron) → 400.
+    _add_sched(db_in_tmp, sid="monthly_close")
     r = client.post(
         "/schedules",
-        data={"id": "s1", "name": "x", "standard_work_id": "sw1", "cron": ""},
+        data={"name": "Monthly close", "standard_work_id": "sw1"},
         follow_redirects=False,
     )
-    assert r.status_code in (400, 422)
+    assert r.status_code == 303
+    assert db_in_tmp.find("schedules", "monthly_close_2") is not None
 
 
 def test_edit_form_renders(client, db_in_tmp):

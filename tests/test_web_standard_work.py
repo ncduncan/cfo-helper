@@ -108,7 +108,6 @@ def test_create_template(client):
     r = client.post(
         "/standard-work",
         data={
-            "id": "my-template",
             "name": "My template",
             "owner_role": "fpa",
             "cadence": "0 9 1 * *",
@@ -119,16 +118,18 @@ def test_create_template(client):
         follow_redirects=False,
     )
     assert r.status_code == 303
-    assert r.headers["location"] == "/standard-work/my-template"
+    assert r.headers["location"] == "/standard-work/my_template"
 
 
-def test_create_rejects_bad_id(client):
+def test_create_appends_suffix_on_name_collision(client, db_in_tmp):
+    _seed_sw(db_in_tmp, sw_id="my_template", name="My template")
     r = client.post(
         "/standard-work",
-        data={"id": "BAD-UPPER", "name": "x", "owner_role": "fpa"},
+        data={"name": "My template", "owner_role": "fpa"},
         follow_redirects=False,
     )
-    assert r.status_code == 400
+    assert r.status_code == 303
+    assert r.headers["location"] == "/standard-work/my_template_2"
 
 
 def test_detail_404_unknown(client):
@@ -183,7 +184,6 @@ def test_add_step(client, db_in_tmp):
     r = client.post(
         "/standard-work/sw1/steps",
         data={
-            "id": "step1",
             "name": "First step",
             "kind": "ai",
             "owner_role": "fpa",
@@ -199,23 +199,24 @@ def test_add_step(client, db_in_tmp):
     assert r.status_code == 303
     sw = db_in_tmp.find("standard_work", "sw1")
     assert len(sw["steps"]) == 1
-    assert sw["steps"][0]["id"] == "step1"
+    assert sw["steps"][0]["id"] == "first_step"
     assert sw["steps"][0]["est_minutes"] == 30
 
 
-def test_add_step_rejects_duplicate_id(client, db_in_tmp):
-    _seed_sw(db_in_tmp, sw_id="sw1", steps=[_step(id="step1")])
+def test_add_step_appends_suffix_on_name_collision(client, db_in_tmp):
+    _seed_sw(db_in_tmp, sw_id="sw1", steps=[_step(id="first_step", name="First step")])
     r = client.post(
         "/standard-work/sw1/steps",
         data={
-            "id": "step1",
-            "name": "dup",
+            "name": "First step",
             "kind": "ai",
             "owner_role": "fpa",
         },
         follow_redirects=False,
     )
-    assert r.status_code == 409
+    assert r.status_code == 303
+    sw = db_in_tmp.find("standard_work", "sw1")
+    assert [s["id"] for s in sw["steps"]] == ["first_step", "first_step_2"]
 
 
 def test_add_step_rejects_unknown_dep(client, db_in_tmp):
@@ -223,7 +224,6 @@ def test_add_step_rejects_unknown_dep(client, db_in_tmp):
     r = client.post(
         "/standard-work/sw1/steps",
         data={
-            "id": "step1",
             "name": "x",
             "kind": "ai",
             "owner_role": "fpa",

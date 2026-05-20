@@ -18,6 +18,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from web import db
+from web.ids import unique_id
 from web.models import TeamMember
 
 
@@ -75,15 +76,19 @@ async def new_team_form(request: Request):
 @router.post("", response_class=HTMLResponse)
 async def create_team_member(
     request: Request,
-    id: str = Form(...),
     name: str = Form(...),
     kind: str = Form(...),
     email: str = Form(""),
     role_tags: str = Form(""),
 ):
+    clean_name = name.strip()
     row = {
-        "id": id.strip(),
-        "name": name.strip(),
+        "id": unique_id(
+            clean_name,
+            (r["id"] for r in db.rows("team")),
+            fallback="member",
+        ),
+        "name": clean_name,
         "email": email.strip() or None,
         "kind": kind,
         "role_tags": [t.strip() for t in role_tags.split(",") if t.strip()],
@@ -94,10 +99,7 @@ async def create_team_member(
         row = _validate(row)
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
-    try:
-        db.insert("team", row)
-    except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+    db.insert("team", row)
     return RedirectResponse(url=f"/team/{row['id']}", status_code=303)
 
 

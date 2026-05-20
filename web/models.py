@@ -156,6 +156,7 @@ class Schedule(BaseModel):
     name: str
     standard_work_id: str
     cron: str
+    timezone: str = "America/New_York"
     enabled: bool = True
     brief_template: dict = Field(default_factory=dict)
     created_at: datetime

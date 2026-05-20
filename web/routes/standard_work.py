@@ -24,6 +24,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from web import db
+from web.ids import unique_id
 from web.models import StandardWork, StandardWorkStep
 
 
@@ -116,7 +117,6 @@ async def new_sw_form(request: Request):
 @router.post("", response_class=HTMLResponse)
 async def create_sw(
     request: Request,
-    id: str = Form(...),
     name: str = Form(...),
     owner_role: str = Form(...),
     cadence: str = Form(""),
@@ -125,9 +125,14 @@ async def create_sw(
     due_offset_days: int = Form(0),
 ):
     now = _now_iso()
+    clean_name = name.strip()
     row = {
-        "id": id.strip(),
-        "name": name.strip(),
+        "id": unique_id(
+            clean_name,
+            (r["id"] for r in db.rows("standard_work")),
+            fallback="template",
+        ),
+        "name": clean_name,
         "source_task_type": None,
         "owner_role": owner_role.strip(),
         "cadence": cadence.strip() or None,
@@ -142,10 +147,7 @@ async def create_sw(
         row = _validate_sw(row)
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
-    try:
-        db.insert("standard_work", row)
-    except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+    db.insert("standard_work", row)
     return RedirectResponse(url=f"/standard-work/{row['id']}", status_code=303)
 
 
@@ -230,7 +232,6 @@ async def new_step_form(request: Request, sw_id: str):
 async def create_step(
     request: Request,
     sw_id: str,
-    id: str = Form(...),
     name: str = Form(...),
     owner_role: str = Form(...),
     kind: str = Form(...),
@@ -242,9 +243,14 @@ async def create_step(
     checkpoint: str = Form(""),
 ):
     sw = _sw_or_404(sw_id)
+    clean_name = name.strip()
     new_step = {
-        "id": id.strip(),
-        "name": name.strip(),
+        "id": unique_id(
+            clean_name,
+            (s["id"] for s in sw.get("steps") or []),
+            fallback="step",
+        ),
+        "name": clean_name,
         "instructions_md": instructions_md,
         "owner_role": owner_role.strip(),
         "default_assignee_id": default_assignee_id.strip() or None,
@@ -261,10 +267,6 @@ async def create_step(
         new_step = _validate_step(new_step)
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=e.errors())
-    if any(s["id"] == new_step["id"] for s in sw.get("steps") or []):
-        raise HTTPException(
-            status_code=409, detail=f"step id {new_step['id']!r} already exists"
-        )
     new_steps = list(sw.get("steps") or []) + [new_step]
     _topo_or_raise(new_steps)
     db.upsert(

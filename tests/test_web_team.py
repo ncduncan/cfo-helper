@@ -72,11 +72,10 @@ def test_fragment_returns_table_only(client, db_in_tmp):
     assert "<!DOCTYPE html>" not in r.text
 
 
-def test_create_human_member(client):
+def test_create_human_member(client, db_in_tmp):
     r = client.post(
         "/team",
         data={
-            "id": "bob",
             "name": "Bob Builder",
             "email": "bob@example.com",
             "kind": "human",
@@ -85,26 +84,31 @@ def test_create_human_member(client):
         follow_redirects=False,
     )
     assert r.status_code == 303
-    assert r.headers["location"] == "/team/bob"
+    assert r.headers["location"] == "/team/bob_builder"
+    assert db_in_tmp.find("team", "bob_builder")["email"] == "bob@example.com"
 
 
-def test_create_rejects_bad_id(client):
+def test_create_normalizes_id_from_name(client, db_in_tmp):
+    """Names with punctuation/case/whitespace slugify to safe lowercase ids."""
     r = client.post(
         "/team",
-        data={"id": "Bad-Upper", "name": "x", "kind": "human"},
+        data={"name": "  Alice O'Neil ", "kind": "human"},
         follow_redirects=False,
     )
-    assert r.status_code == 400
+    assert r.status_code == 303
+    assert r.headers["location"] == "/team/alice_o_neil"
 
 
-def test_create_rejects_duplicate(client, db_in_tmp):
-    _add(db_in_tmp, id="dup", name="First")
+def test_create_appends_suffix_on_name_collision(client, db_in_tmp):
+    """Two members with the same name get distinct ids via _2/_3 suffix."""
+    _add(db_in_tmp, id="alice", name="Alice")
     r = client.post(
         "/team",
-        data={"id": "dup", "name": "Second", "kind": "human"},
+        data={"name": "Alice", "kind": "human"},
         follow_redirects=False,
     )
-    assert r.status_code == 409
+    assert r.status_code == 303
+    assert r.headers["location"] == "/team/alice_2"
 
 
 def test_detail_404_for_unknown(client):

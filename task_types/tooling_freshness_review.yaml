@@ -20,8 +20,7 @@ description: |
   task sits in "Awaiting your input" with a pre-built diff report (one
   section per upstream) to review.
 
-  See CLAUDE.md §11 (builder modules) and the plan at
-  /Users/natduncan/.claude/plans/yes-i-think-it-s-valiant-pudding.md §6.
+  See CLAUDE.md §5 (builder modules) for context.
 brief_schema:
   - { field: period, type: month, required: true,
       label: "Review period (YYYY-MM, typically the most-recent close)" }

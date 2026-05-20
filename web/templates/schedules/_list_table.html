@@ -15,7 +15,7 @@
         <tr>
           <th class="text-left px-4 py-2">Name</th>
           <th class="text-left px-4 py-2">Standard work</th>
-          <th class="text-left px-4 py-2">Cron</th>
+          <th class="text-left px-4 py-2">Cadence</th>
           <th class="text-left px-4 py-2">Period template</th>
           <th class="text-left px-4 py-2">Enabled</th>
           <th class="text-left px-4 py-2">Last fire</th>
@@ -27,7 +27,10 @@
         <tr class="hover:bg-slate-50">
           <td class="px-4 py-2 font-medium">{{ s.name }}<div class="text-xs text-slate-500 font-mono">{{ s.id }}</div></td>
           <td class="px-4 py-2 text-xs"><a href="/standard-work/{{ s.standard_work_id }}" class="text-sky-700 hover:underline font-mono">{{ s.standard_work_id }}</a></td>
-          <td class="px-4 py-2 text-xs font-mono">{{ s.cron }}</td>
+          <td class="px-4 py-2 text-xs">
+            <div>{{ s.cadence_label }}</div>
+            <div class="text-xs text-slate-500 font-mono">{{ s.cron }}</div>
+          </td>
           <td class="px-4 py-2 text-xs">{{ s.brief_template.period if s.brief_template and s.brief_template.period else '—' }}</td>
           <td class="px-4 py-2 text-xs">
             {% if s.enabled %}<span class="text-emerald-700">Enabled</span>{% else %}<span class="text-slate-500">Disabled</span>{% endif %}

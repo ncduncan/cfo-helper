@@ -11,8 +11,11 @@ Flow:
   4. Background thread polls /api/health; on success, swap the window URL
      to the dashboard; on 30s timeout, swap to launcher/error.html with
      the log path injected.
-  5. On window close: terminate the subprocess (if we spawned it),
-     waiting 5s for graceful shutdown before SIGKILL.
+  5. On window close: SIGKILL the subprocess (if we spawned it) from a
+     background thread so the GUI returns immediately. Graceful shutdown
+     never completes within a useful window because the SSE streams at
+     /events hold connections open indefinitely; all DB writes are atomic
+     tempfile+rename under flock, so SIGKILL is safe.
 """
 
 from __future__ import annotations
@@ -35,7 +38,7 @@ DASHBOARD_URL = f"http://127.0.0.1:{DASHBOARD_PORT}/"
 HEALTH_URL = f"http://127.0.0.1:{DASHBOARD_PORT}/api/health"
 
 READY_TIMEOUT_S = 30
-SHUTDOWN_GRACE_S = 5
+SHUTDOWN_REAP_S = 2
 
 
 def existing_instance() -> bool:
@@ -90,15 +93,11 @@ def wait_for_health(timeout_s: float = READY_TIMEOUT_S) -> bool:
 
 
 def shutdown(proc: subprocess.Popen | None) -> None:
-    """Terminate the dashboard subprocess, escalating to SIGKILL if needed."""
+    """SIGKILL the dashboard subprocess and reap it."""
     if proc is None or proc.poll() is not None:
         return
-    proc.terminate()
-    try:
-        proc.wait(timeout=SHUTDOWN_GRACE_S)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.wait(timeout=2)
+    proc.kill()
+    proc.wait(timeout=SHUTDOWN_REAP_S)
 
 
 def main() -> int:
@@ -131,8 +130,11 @@ def main() -> int:
 
     def on_closed() -> None:
         # Only kill what we started — never terminate a sibling we attached to.
+        # Run shutdown off the GUI thread so the window closes instantly; the
+        # non-daemon thread keeps the interpreter alive until the subprocess
+        # is reaped.
         if proc is not None:
-            shutdown(proc)
+            threading.Thread(target=shutdown, args=(proc,)).start()
 
     window.events.closed += on_closed
 
