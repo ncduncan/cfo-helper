@@ -176,3 +176,8 @@ def reload() -> None:
 def run_now(schedule_id: str) -> str:
     """Fire a schedule synchronously (UI button)."""
     return _fire(schedule_id)
+
+
+def is_scheduler_alive() -> bool:
+    """True if the APScheduler BackgroundScheduler is running."""
+    return _scheduler is not None and _scheduler.running

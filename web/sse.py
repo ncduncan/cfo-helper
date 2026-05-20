@@ -148,6 +148,11 @@ def stop_observer() -> None:
     _observer = None
 
 
+def is_observer_alive() -> bool:
+    """True if the watchdog Observer thread is currently alive."""
+    return _observer is not None and _observer.is_alive()
+
+
 async def event_stream() -> AsyncIterator[str]:
     """Async generator that yields SSE-formatted strings."""
     q = hub.subscribe()
