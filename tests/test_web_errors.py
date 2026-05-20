@@ -77,6 +77,7 @@ def test_browser_request_gets_html_error_page():
     assert "text/html" in r.headers["content-type"]
     assert "simulated failure" in r.text
     assert "Something went wrong" in r.text
+    assert "request_id" in r.text
 
 
 def test_message_is_truncated_at_200_chars():
