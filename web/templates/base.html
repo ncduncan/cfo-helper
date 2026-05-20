@@ -61,8 +61,19 @@
 
       const el = document.createElement("div");
       el.className = `${bg} text-white text-sm rounded shadow-lg px-4 py-3 pointer-events-auto max-w-sm`;
-      el.innerHTML = `<div class="font-medium">${message}</div>` +
-        (requestId ? `<div class="text-xs opacity-75 mt-1">id: ${requestId}</div>` : "");
+
+      const body = document.createElement("div");
+      body.className = "font-medium";
+      body.textContent = message;
+      el.appendChild(body);
+
+      if (requestId) {
+        const sub = document.createElement("div");
+        sub.className = "text-xs opacity-75 mt-1";
+        sub.textContent = "id: " + requestId;
+        el.appendChild(sub);
+      }
+
       document.getElementById("toast-container").appendChild(el);
       setTimeout(() => { el.style.transition = "opacity 0.4s"; el.style.opacity = "0"; }, 4000);
       setTimeout(() => { el.remove(); }, 4500);
