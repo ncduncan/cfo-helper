@@ -123,3 +123,49 @@ def test_safe_scheduler_reload_swallows_exception_and_logs(monkeypatch, caplog):
         result = errors.safe_scheduler_reload()
     assert result is False
     assert any("scheduler.reload()" in rec.message for rec in caplog.records)
+
+
+@pytest.mark.asyncio
+async def test_supervisor_restarts_dead_observer(tmp_path, monkeypatch):
+    from web import sse, supervisor
+
+    # Point watchdog at a tmpdir so we don't litter the real DB dir.
+    monkeypatch.setattr(sse, "DB_DIR", tmp_path / "db")
+    monkeypatch.setattr(sse, "TASKS_DIR", tmp_path / "tasks")
+    monkeypatch.setattr(sse, "_observer", None)
+
+    sse.start_observer()
+    assert sse.is_observer_alive() is True
+
+    # Kill the observer behind the supervisor's back.
+    sse._observer.stop()
+    sse._observer.join(timeout=1)
+    sse._observer = None
+    assert sse.is_observer_alive() is False
+
+    # Run one supervisor tick.
+    await supervisor.run_one_tick()
+    assert sse.is_observer_alive() is True
+
+    sse.stop_observer()
+
+
+@pytest.mark.asyncio
+async def test_supervisor_restarts_dead_scheduler(monkeypatch):
+    from web import scheduler, supervisor
+
+    calls = {"start": 0}
+
+    def fake_is_alive():
+        return False
+
+    def fake_start():
+        calls["start"] += 1
+
+    monkeypatch.setattr(scheduler, "is_scheduler_alive", fake_is_alive)
+    monkeypatch.setattr(scheduler, "start_scheduler", fake_start)
+    # Keep observer healthy so the test focuses on scheduler.
+    monkeypatch.setattr("web.sse.is_observer_alive", lambda: True)
+
+    await supervisor.run_one_tick()
+    assert calls["start"] == 1
