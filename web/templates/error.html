@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong — CFO Helper{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white border border-slate-200 rounded p-6">
+  <h1 class="text-xl font-semibold text-slate-900">Something went wrong</h1>
+  <p class="mt-3 text-sm text-slate-700">{{ message }}</p>
+  <div class="mt-6 flex items-center gap-4">
+    <a href="javascript:history.back()" class="text-sm text-blue-600 hover:underline">&larr; Back</a>
+    <a href="/" class="text-sm text-slate-500 hover:underline">Home</a>
+  </div>
+  <p class="mt-6 text-xs text-slate-400">request_id: {{ request_id }}</p>
+</div>
+{% endblock %}
