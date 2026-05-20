@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  cfo-helper team-console launchd template.
+
+  Installs the dashboard at http://localhost:8765 to start on login and
+  restart if it crashes. Edit the WorkingDirectory + ProgramArguments
+  paths to match your clone location, then:
+
+      cp docs/launchd/cfo-helper.plist ~/Library/LaunchAgents/
+      launchctl load ~/Library/LaunchAgents/cfo-helper.plist
+
+  To stop and uninstall:
+
+      launchctl unload ~/Library/LaunchAgents/cfo-helper.plist
+      rm ~/Library/LaunchAgents/cfo-helper.plist
+
+  Logs land in <repo>/logs/dashboard.log and <repo>/logs/dashboard.err.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.cfo-helper.dashboard</string>
+
+    <key>WorkingDirectory</key>
+    <string>/REPLACE/WITH/ABSOLUTE/PATH/TO/cfo-helper</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/REPLACE/WITH/ABSOLUTE/PATH/TO/cfo-helper/.venv/bin/uvicorn</string>
+        <string>web.main:app</string>
+        <string>--host</string>
+        <string>127.0.0.1</string>
+        <string>--port</string>
+        <string>8765</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/REPLACE/WITH/ABSOLUTE/PATH/TO/cfo-helper/logs/dashboard.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/REPLACE/WITH/ABSOLUTE/PATH/TO/cfo-helper/logs/dashboard.err</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

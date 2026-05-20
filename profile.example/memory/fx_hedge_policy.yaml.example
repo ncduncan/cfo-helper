@@ -1,0 +1,32 @@
+# profile/memory/fx_hedge_policy.yaml — foreign-currency exposure and
+# hedging rules. Consumed by Controller (FX revaluation JE, CTA) and
+# FP&A (constant-currency variance). Leave empty if functional currency
+# is USD and no foreign exposure exists.
+
+# Functional currency of the parent entity.
+functional_currency: USD
+
+# Foreign-currency exposure thresholds. When net exposure in a currency
+# exceeds the threshold, hedge per the policy below.
+exposure_threshold_usd: 1000000
+
+# Hedging strategy by exposure type.
+hedge_strategy:
+  transactional: forward_contracts   # invoices in foreign currency
+  translational: not_hedged          # foreign-sub equity translation
+  net_investment: not_hedged
+
+# Approved hedging instruments and tenor caps.
+instruments:
+  forward_contracts:
+    max_tenor_months: 12
+    counterparty_concentration_pct: 0.50
+
+# Revaluation cadence — applied to monetary balance-sheet accounts
+# denominated in foreign currency.
+revaluation_cadence: monthly
+
+# Rate sources (must be auditor-acceptable).
+rate_source:
+  spot: "OANDA closing mid-rate, last business day of period"
+  average: "OANDA monthly average"

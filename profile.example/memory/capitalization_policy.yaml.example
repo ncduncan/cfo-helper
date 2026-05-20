@@ -1,0 +1,28 @@
+# profile/memory/capitalization_policy.yaml — fixed-asset and internal-use
+# software capitalization thresholds and useful lives. CFO-editable.
+# Consumed by Controller during P1 and by Reviewer during tie-out.
+
+# Threshold below which an expenditure is expensed rather than capitalized.
+threshold_usd: 5000
+
+# Default useful lives in years. Override per-asset in the FA subledger.
+useful_lives_years:
+  computer_equipment: 3
+  furniture_and_fixtures: 5
+  leasehold_improvements: 7   # or remaining lease term if shorter
+  software_internal_use: 3    # ASC 350-40
+  software_for_sale: null     # ASC 985-20 — set when applicable
+
+# Internal-use software (ASC 350-40) — which project phase costs are
+# capitalizable. Application development = yes; preliminary + post-
+# implementation = expensed.
+asc_350_40:
+  preliminary_phase: expense
+  application_development: capitalize
+  post_implementation: expense
+
+# Impairment review trigger (e.g., a quarterly indicator scan). Set to
+# 'quarterly' once a process is in place; until then 'on_event' is
+# acceptable but Reviewer will flag long-lived assets >threshold without
+# a recent review.
+impairment_review_cadence: on_event

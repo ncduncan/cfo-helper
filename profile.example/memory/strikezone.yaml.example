@@ -1,0 +1,37 @@
+# profile/memory/strikezone.yaml — what "normal" looks like for this
+# business. Reviewer uses these bands to decide whether a number is in
+# the expected range or worth a second look, beyond the variance
+# materiality thresholds in materiality.yaml.
+
+# Each entry defines an acceptable band for a metric. Outside the band
+# does not block close — it surfaces as a "verify this" prompt for the
+# CFO at the next checkpoint.
+
+bands:
+  gross_margin_pct:
+    lower: 0.30
+    upper: 0.70
+    cadence: monthly
+
+  operating_margin_pct:
+    lower: 0.00
+    upper: 0.30
+    cadence: monthly
+
+  dso_days:
+    lower: 30
+    upper: 75
+    cadence: monthly
+
+  cash_runway_months:
+    lower: 6
+    upper: null
+    cadence: monthly
+
+  headcount_growth_pct_qoq:
+    lower: -0.05
+    upper: 0.20
+    cadence: quarterly
+
+# Add bands specific to this business. The variance-commentary-structure
+# skill cites strikezone breaches in its prose when relevant.

@@ -11,7 +11,7 @@ This is the **framework** layer — rules and architecture that apply to every a
 
 The repo separates **framework** (public, MIT-licensed) from **profile** (private, gitignored):
 
-- `profile/` is the user's own company data — `CLAUDE.md` business context, accounting policies (`memory/`), runtime state (`db/`), inbox material. Nothing under `profile/` is ever committed.
+- `profile/` is the user's own company data — `CLAUDE.md` business context, accounting policies (`memory/`), runtime state (`db/`). Nothing under `profile/` is ever committed.
 - `profile.example/` ships starter templates a new user copies to bootstrap their own `profile/`.
 - A pre-commit hook (`scripts/safety/denylist_check.py`) and a CI workflow (`.github/workflows/safety-check.yml`) refuse commits that contain identifying strings, so this boundary cannot regress.
 

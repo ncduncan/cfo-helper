@@ -35,11 +35,6 @@ def profile_memory_dir() -> Path:
     return profile_dir() / "memory"
 
 
-def profile_inbox_dir() -> Path:
-    """User-supplied inputs (PPTX/XLSX/DOCX masters, historicals, ...)."""
-    return profile_dir() / "inbox"
-
-
 def profile_task_types_dir() -> Path:
     """Company-specific standard-work templates layered on top of repo task_types/."""
     return profile_dir() / "task_types"

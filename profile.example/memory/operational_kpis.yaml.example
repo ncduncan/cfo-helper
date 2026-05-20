@@ -1,0 +1,43 @@
+# profile/memory/operational_kpis.yaml — KPI catalog for the close pack
+# and MOR. Consumed by the kpi-pack skill. Every close ships the metrics
+# listed here; if data is missing, the metric ships with low-confidence
+# and an open_question rather than being silently dropped.
+
+# Each KPI:
+#   id:             stable slug, used in claim_ids
+#   label:          human-readable
+#   unit:           'usd' | 'pct' | 'count' | 'days' | 'ratio'
+#   computation:    short formula description (the kpi-pack skill maps
+#                   this to a concrete derivation)
+#   target:         (optional) plan or board target for the period
+#   commentary:     (optional) one-liner explaining what the metric means
+#                   for this business
+
+kpis:
+  - id: revenue_total
+    label: "Total revenue"
+    unit: usd
+    computation: "sum(revenue_accounts) for period"
+
+  - id: gross_margin_pct
+    label: "Gross margin %"
+    unit: pct
+    computation: "(revenue - cogs) / revenue"
+
+  - id: operating_income
+    label: "Operating income (EBIT)"
+    unit: usd
+    computation: "revenue - cogs - opex"
+
+  - id: cash_balance_eop
+    label: "Cash balance, end of period"
+    unit: usd
+    computation: "sum(cash_accounts) at LCD"
+
+  - id: dso_days
+    label: "Days sales outstanding"
+    unit: days
+    computation: "AR / (revenue / days_in_period)"
+
+# Add business-specific KPIs below — bookings, ARR, churn, headcount,
+# unit economics. The kpi-pack skill ships them with the close.

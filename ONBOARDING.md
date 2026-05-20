@@ -131,7 +131,7 @@ to `profile/memory/`), a new customer archetype (updates
 
 | Where | What |
 |---|---|
-| `profile/` | Your business context, runtime state, inbox content. **Never committed.** |
+| `profile/` | Your business context, runtime state. **Never committed.** |
 | `profile.example/` | Templates and starter content. Tracked publicly. |
 | `task_types/` | Framework workflow templates. If you need a company-specific one, drop it in `profile/task_types/` and `seed_standard_work` will pick it up. |
 | `knowledge/` | Accounting standards (ASC 606, 350-40, …) + tax guidance. Reusable. Add company-specific knowledge under `profile/knowledge/` if you have it. |

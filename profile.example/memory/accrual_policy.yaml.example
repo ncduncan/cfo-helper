@@ -1,0 +1,29 @@
+# profile/memory/accrual_policy.yaml — period-end accrual policies.
+# Drives the accrual-schedule skill during Controller P1. Each entry
+# becomes a row in the period accrual schedule; the skill drafts the JE
+# and stages it for CFO sign-off (never posts directly).
+
+# Each accrual:
+#   id:                stable slug, used as claim_id stem
+#   description:       human-readable
+#   gl_account:        canonical account code (must match account_map)
+#   offset_account:    where the credit (or debit, for reversals) lands
+#   computation:       'fixed' | 'driver' | 'lookup'
+#   driver:            (when computation=driver) field reference, e.g.
+#                      "subledger.payroll.unpaid_days_at_period_end"
+#   amount_usd:        (when computation=fixed) the dollar amount
+#   reversal:          'next_period_first_day' | 'never' | 'on_event'
+#   support:           where the auditor can find evidence
+
+accruals: []
+
+# Example entry (delete the [] above and add entries like this):
+# accruals:
+#   - id: payroll_period_end
+#     description: "Wages earned but not paid as of LCD."
+#     gl_account: "2100-payroll-accrual"
+#     offset_account: "6100-wages"
+#     computation: driver
+#     driver: "subledger.payroll.unpaid_days_at_period_end"
+#     reversal: next_period_first_day
+#     support: "ADP period-end report"

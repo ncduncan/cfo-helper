@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .DS_Store
 logs/
+.playwright-mcp/
 
 # Per-task derived artifacts — keep inputs + task.json, ignore the rest
 tasks/*/working/
@@ -23,7 +24,7 @@ workspace/*/state.json
 uv.lock
 
 # Private profile — never commit. Everything in profile/ is the user's own
-# company data (CLAUDE.md §1–7, memory, db, inbox, denylist). The framework
+# company data (CLAUDE.md §1–7, memory, db, denylist). The framework
 # ships profile.example/ as starter templates.
 profile/
 

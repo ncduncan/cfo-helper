@@ -1,0 +1,47 @@
+# profile/memory/cost_categories.yaml — how OpEx accounts roll up into
+# the categories used by the cost-structure task type and the MOR cost
+# narrative. Consumed by scripts/cost_structure.py.
+
+# Each category groups GL accounts into a reporting bucket. The same
+# account must appear in exactly one category (no double-counting). Any
+# account in the chart not assigned to a category falls into 'other'.
+
+categories:
+  people:
+    description: "Salaries, benefits, payroll taxes, contractors."
+    accounts: []   # e.g. ["6100-wages", "6110-benefits", "6120-payroll-tax"]
+
+  facilities:
+    description: "Rent, utilities, office supplies, depreciation on leaseholds."
+    accounts: []
+
+  technology:
+    description: "Cloud infrastructure, SaaS tooling, hardware, IT support."
+    accounts: []
+
+  professional_services:
+    description: "Legal, accounting, consulting, contractors not in 'people'."
+    accounts: []
+
+  marketing:
+    description: "Demand-gen, advertising, events, content."
+    accounts: []
+
+  travel_and_entertainment:
+    description: "Travel, meals, client entertainment."
+    accounts: []
+
+  other:
+    description: "Catch-all. Anything here is a candidate for re-categorization."
+    accounts: []
+
+# Fixed vs. variable classification per category (drives the cost-
+# structure flexibility analysis).
+fixed_variable:
+  people: fixed
+  facilities: fixed
+  technology: semi_variable
+  professional_services: variable
+  marketing: variable
+  travel_and_entertainment: variable
+  other: variable

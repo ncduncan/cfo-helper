@@ -49,7 +49,7 @@ counting differs by close type — see [CLAUDE.md §9](../CLAUDE.md):
 
 ## Parent FP&A (when applicable) report-out (LCD+10, quarter only)
 
-- **Task type:** [`task_types/ge_aero_reportout.yaml`](../task_types/ge_aero_reportout.yaml)
+- **Task type:** TBD — generic `task_types/parent_reportout.yaml` not yet authored. Drop a company-specific variant in `profile/task_types/` once the workflow stabilizes.
 - **Frequency:** Mar / Jun / Sep / Dec close only.
 - **Inputs:** same as MOR; often re-pitches MOR content for a parent-FP&A
   audience (peer-to-peer with the parent finance team).

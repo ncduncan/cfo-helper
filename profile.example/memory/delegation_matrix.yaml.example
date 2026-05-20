@@ -1,0 +1,29 @@
+# profile/memory/delegation_matrix.yaml — who can approve what.
+# Used by Commercial (deal approval), Controller (JE sign-off), and
+# Reviewer (workflow gating). CFO-editable.
+
+# Each entry: action → approver tier → dollar threshold.
+# Tiers: 'individual_contributor' < 'manager' < 'director' < 'cfo' < 'ceo' < 'board'
+
+journal_entries:
+  - { max_usd: 10000, approver: manager }
+  - { max_usd: 100000, approver: director }
+  - { max_usd: 1000000, approver: cfo }
+  - { max_usd: null, approver: ceo }    # > $1M
+
+deal_discounts:
+  - { max_discount_pct: 0.10, approver: manager }
+  - { max_discount_pct: 0.20, approver: director }
+  - { max_discount_pct: 0.30, approver: cfo }
+  - { max_discount_pct: null, approver: ceo }   # > 30%
+
+capital_expenditure:
+  - { max_usd: 25000, approver: director }
+  - { max_usd: 250000, approver: cfo }
+  - { max_usd: 1000000, approver: ceo }
+  - { max_usd: null, approver: board }
+
+contracts_legal:
+  - { max_annual_value_usd: 50000, approver: director }
+  - { max_annual_value_usd: 500000, approver: cfo }
+  - { max_annual_value_usd: null, approver: ceo }

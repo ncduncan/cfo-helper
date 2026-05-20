@@ -1,0 +1,25 @@
+# profile/memory/credit_policy.yaml — receivables aging and allowance
+# methodology. CFO-editable. Consumed by Controller during P1 (allowance
+# JE) and FP&A during cash-flow modeling.
+
+# Aging buckets in days from invoice date.
+aging_buckets_days: [30, 60, 90, 120]
+
+# Reserve percent by bucket (current = 0-30 days, etc.).
+allowance_percent_by_bucket:
+  current: 0.005
+  "31-60": 0.02
+  "61-90": 0.05
+  "91-120": 0.15
+  "120+": 0.50
+
+# Specific-reserve override for customers in known distress. Use the
+# customer_id from the AR subledger. CFO approves additions.
+specific_reserves: {}
+
+# When a receivable is written off (vs. kept reserved). Calendar days
+# past due.
+writeoff_threshold_days: 365
+
+# Credit-hold trigger — block new orders when AR > threshold past due.
+credit_hold_threshold_days_past_due: 90
