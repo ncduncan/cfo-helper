@@ -6,7 +6,7 @@
       "name": "Forge",
       "email": null,
       "kind": "ai",
-      "role_tags": ["controller", "fpa", "commercial", "reporting", "reviewer", "analyst"],
+      "role_tags": ["controller", "fpa", "commercial", "reporting", "reviewer", "analyst", "tps_lean"],
       "active": true,
       "created_at": "2026-01-01T00:00:00+00:00"
     },

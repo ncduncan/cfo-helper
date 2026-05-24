@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cfo-helper/agents/kaizen_recommendations.schema.json",
+  "title": "TPS Lean Kaizen Recommendations",
+  "description": "TPS Lean agent's improvement findings and A3-structured recommendations. Informational only — never blocks finalize.",
+  "type": "object",
+  "required": ["agent", "scope_period", "produced_at", "lean_metrics", "findings", "recommendations"],
+  "additionalProperties": false,
+  "properties": {
+    "agent": { "const": "tps_lean" },
+    "scope_period": {
+      "type": "string",
+      "description": "Period the review covered. Either YYYY-MM (a single month) or YYYY-Qn (a quarter — used by the quarterly sweep)."
+    },
+    "target_artifacts": {
+      "type": "array",
+      "description": "Repo-relative paths the review examined. Lets Reviewer and the dashboard show which surfaces this run touched.",
+      "items": { "type": "string" }
+    },
+    "produced_at": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "string",
+      "description": "One-paragraph plain-English executive summary of the kaizen punch list. Used by Coordinator and the dashboard."
+    },
+    "lean_metrics": {
+      "type": "object",
+      "description": "Headline empirical metrics. Each value corresponds to a claim_id in the sibling work_product.json; this object is the human-readable rollup, not the source of truth.",
+      "additionalProperties": false,
+      "properties": {
+        "files_examined": { "type": "integer", "minimum": 0 },
+        "handoff_count": { "type": ["integer", "null"], "minimum": 0 },
+        "value_add_ratio_pct": { "type": ["number", "null"] },
+        "flow_efficiency_pct": { "type": ["number", "null"] },
+        "p50_cycle_time_days": { "type": ["number", "null"] },
+        "p90_cycle_time_days": { "type": ["number", "null"] },
+        "wip_total": { "type": ["integer", "null"], "minimum": 0 },
+        "queue_dwell_p50_hours": { "type": ["number", "null"] },
+        "queue_dwell_p90_hours": { "type": ["number", "null"] },
+        "push_signal_count": { "type": ["integer", "null"], "minimum": 0 },
+        "bottleneck_role": { "type": ["string", "null"] },
+        "batch_coefficient": { "type": ["number", "null"] }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "waste_category", "title", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["HIGH", "MED", "LOW"],
+            "description": "Informational severity. HIGH = active dysfunction. MED = drift worth addressing. LOW = note for the file. None block finalize."
+          },
+          "waste_category": {
+            "type": "string",
+            "enum": [
+              "defects",
+              "overproduction",
+              "waiting",
+              "non_utilized_talent",
+              "transportation",
+              "inventory",
+              "motion",
+              "extra_processing",
+              "wip_overload",
+              "push_signal",
+              "bottleneck",
+              "batching",
+              "context_switching",
+              "std_work_gap"
+            ],
+            "description": "8 wastes (DOWNTIME) plus pull-flow-specific categories produced by lean-pull-flow-review."
+          },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "evidence_claim_id": {
+            "type": "string",
+            "description": "Claim id in the sibling work_product.json that supports this finding."
+          },
+          "target_artifact": {
+            "type": "string",
+            "description": "Repo-relative path of the artifact this finding is about (or a db: prefix for live db, e.g. db:tasks)."
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "linked_findings",
+          "problem_statement",
+          "root_cause_hypothesis",
+          "countermeasure",
+          "expected_impact",
+          "owner_role",
+          "priority"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "linked_findings": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Finding ids this countermeasure addresses."
+          },
+          "problem_statement": {
+            "type": "string",
+            "description": "What is wrong, in the present tense. No hedge prose."
+          },
+          "root_cause_hypothesis": {
+            "type": "string",
+            "description": "Why it is happening. Marked as a hypothesis — the CFO confirms or rejects before acting."
+          },
+          "countermeasure": {
+            "type": "string",
+            "description": "What to do. Concrete, actionable, ideally one change."
+          },
+          "expected_impact": {
+            "type": "string",
+            "description": "Quantified expected delta (e.g. '-2 days flow time', '+15% VA ratio', 'WIP per assignee ≤ 3'). If you cannot quantify, write an open_question on the work_product instead."
+          },
+          "owner_role": {
+            "type": "string",
+            "description": "Role responsible for implementing. Free-text to allow non-agent roles (e.g. 'cfo', 'fpa_manager')."
+          },
+          "target_complete_date": {
+            "type": ["string", "null"],
+            "description": "ISO date the countermeasure should be in place. Required for HIGH-severity recommendations."
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["HIGH", "MED", "LOW"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["proposed", "accepted", "in_progress", "implemented", "rejected", "deferred"],
+            "default": "proposed"
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "Anything the agent could not answer with confidence and needs CFO input on. Mirrors work_product.open_questions.",
+      "items": {
+        "type": "object",
+        "required": ["id", "question"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "question": { "type": "string" },
+          "blocks": { "type": "boolean", "default": false }
+        }
+      }
+    }
+  }
+}

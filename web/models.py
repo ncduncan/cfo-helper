@@ -103,6 +103,7 @@ class TaskStepInstance(BaseModel):
     completed_at: Optional[datetime] = None
     deliverable_paths: list[str] = Field(default_factory=list)
     findings_ref: Optional[str] = None
+    lean_recommendations_ref: Optional[str] = None
     comments: list[TaskComment] = Field(default_factory=list)
 
 

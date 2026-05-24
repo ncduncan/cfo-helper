@@ -376,6 +376,12 @@ async def complete_step(
                 if p.endswith("findings.json"):
                     s["findings_ref"] = p
                     break
+        lean_recs = audit.extract_lean_recommendations(merged_paths, bundles.REPO_ROOT)
+        if lean_recs is not None:
+            for p in merged_paths:
+                if p.endswith("kaizen_recommendations.json"):
+                    s["lean_recommendations_ref"] = p
+                    break
 
     _mutate_step(task_id, step_id, upd)
 

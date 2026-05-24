@@ -1,0 +1,27 @@
+# profile/memory/lean_thresholds.yaml — TPS Lean review thresholds.
+# CFO-editable. Adjust to your team's size and cadence. The defaults below
+# match scripts.lean.wip_flow.DEFAULT_THRESHOLDS — overriding any key here
+# replaces the default at compute time.
+
+# WIP limit per assignee. Any team member with more than this number of
+# in_progress step instances at scan time is flagged as overloaded.
+wip_limit_per_assignee: 3
+
+# Queue items waiting longer than this are flagged. Counts both `pending`
+# (not yet claimed by Forge) and `claimed` (claimed but not completed).
+queue_dwell_max_hours: 24
+
+# Step instances older than this with status=in_progress are treated as
+# "overdue" for the push-signal check. If an assignee picks up new work
+# while they have an overdue step, the pair becomes a push signal.
+push_overdue_hours: 48
+
+# Bottleneck window: count waiting vs completed step instances over the
+# most-recent N tasks (ordered by created_at). The role with the largest
+# waiting/(completed+1) ratio is named the bottleneck.
+bottleneck_window_n: 20
+
+# Maximum simultaneous in_progress task instances per assignee before
+# the context-switching check flags them. Above this means the assignee
+# is splitting attention across more than this many task ids at once.
+context_switch_simultaneous_max: 2

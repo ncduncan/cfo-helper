@@ -1,0 +1,77 @@
+name: lean_process_review_monthly
+title_template: "TPS Lean process review — {period} (monthly)"
+description: |
+  Monthly TPS Lean improvement consultation. Two parallel deterministic
+  sub-phases feed a single agent-narrative review and a CFO checkpoint.
+
+  - P1a (`lean.diff_gate_monthly`) — git-diff gate. Detects whether
+    any file under `task_types/` or `runbooks/` has changed since the
+    last Lean run (SHA recorded in `profile/memory/lean_last_run.json`).
+    If no changes, the surrounding P2 skips `lean-standard-work-review`
+    silently.
+  - P1b (`lean.compute_wip_flow`) — always runs. Computes the
+    six current-state WIP / pull-flow metrics from `profile/db/`. WIP
+    dysfunction can develop without any template change, so this pass
+    is never gated.
+
+  P2 is the `tps_lean` agent draft. It invokes:
+  - `lean-pull-flow-review` always (against P1b's claims).
+  - `lean-standard-work-review` only if P1a returned a non-empty diff.
+  - `kaizen-recommendation-structure` to format any HIGH/MED findings.
+  - `writing-style` for the executive summary.
+
+  Output is `outputs/tps_lean/kaizen_recommendations.json` plus a sibling
+  `outputs/tps_lean/work_product.json` carrying the empirical claims.
+  Severity is HIGH/MED/LOW (informational only). Never blocks finalize.
+
+  See `agents/tps_lean.md` for the agent contract and self-checks.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Review period (YYYY-MM)" }
+frequency: monthly
+pipeline:
+  - phase: P1a
+    agent: tps_lean
+    kind: deterministic
+    deterministic_runner: scripts.dispatch.run_p1_lean_diff_gate
+    description: |
+      Compute the set of task_types/ and runbooks/ files changed since
+      profile/memory/lean_last_run.json.sha. Emit:
+      - outputs/tps_lean/diff_changes.json — { "changed": [paths], "head_sha": "...", "previous_sha": "..." }
+      - a partial work_product.json claim listing the count and current HEAD.
+      If profile/memory/lean_last_run.json is absent, treat all files as
+      changed and write the file at the end of P3 (when the CFO
+      accepts the run as the new baseline).
+  - phase: P1b
+    agent: tps_lean
+    kind: deterministic
+    deterministic_runner: scripts.dispatch.run_p1_lean_wip_flow
+    description: |
+      Always runs. Call scripts.lean.wip_flow.compute() and append each
+      section (wip_per_assignee, queue_age, push_signals, bottleneck,
+      batch_coefficient, context_switching) to
+      outputs/tps_lean/work_product.json as computed claims. Threshold
+      defaults come from profile/memory/lean_thresholds.yaml when
+      present.
+  - phase: P2
+    agent: tps_lean
+    kind: deterministic+narrative
+    description: |
+      The tps_lean agent reads the P1a + P1b claims, invokes
+      lean-pull-flow-review against the wip-flow section, invokes
+      lean-standard-work-review against any changed task_types/runbooks
+      from P1a (skip if P1a returned no changes), and drafts
+      kaizen_recommendations.json. Every recommendation follows the A3
+      structure (kaizen-recommendation-structure). HIGH severity
+      requires owner_role + target_complete_date; MED requires owner;
+      LOW is a note. Apply writing-style to the summary.
+  - phase: P3
+    agent: tps_lean
+    kind: narrative_only
+    checkpoint: true
+    description: |
+      CFO checkpoint. CFO reviews the kaizen punch list and accepts,
+      defers, or rejects each recommendation. On acceptance, the run's
+      head_sha (from P1a) is written to
+      profile/memory/lean_last_run.json so the next monthly run's diff
+      gate computes against this baseline.

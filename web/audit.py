@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 # Roles whose deliverables must carry claim-id provenance.
-NUMERIC_ROLES = {"controller", "fpa", "commercial", "reporting", "reviewer"}
+NUMERIC_ROLES = {"controller", "fpa", "commercial", "reporting", "reviewer", "tps_lean"}
 
 
 def _find_work_product(deliverable_paths: list[str], repo_root: Path) -> Path | None:
@@ -42,6 +42,21 @@ def _find_work_product(deliverable_paths: list[str], repo_root: Path) -> Path | 
 def _find_findings(deliverable_paths: list[str], repo_root: Path) -> Path | None:
     for rel in deliverable_paths:
         if rel.endswith("findings.json"):
+            p = (repo_root / rel).resolve()
+            try:
+                p.relative_to(repo_root.resolve())
+            except ValueError:
+                continue
+            if p.exists():
+                return p
+    return None
+
+
+def _find_kaizen_recommendations(
+    deliverable_paths: list[str], repo_root: Path
+) -> Path | None:
+    for rel in deliverable_paths:
+        if rel.endswith("kaizen_recommendations.json"):
             p = (repo_root / rel).resolve()
             try:
                 p.relative_to(repo_root.resolve())
@@ -96,6 +111,24 @@ def extract_findings(
 ) -> dict[str, Any] | None:
     """Return the parsed findings.json content if present, else None."""
     p = _find_findings(deliverable_paths, repo_root)
+    if p is None:
+        return None
+    try:
+        return json.loads(p.read_text())
+    except json.JSONDecodeError:
+        return None
+
+
+def extract_lean_recommendations(
+    deliverable_paths: list[str], repo_root: Path
+) -> dict[str, Any] | None:
+    """Return the parsed kaizen_recommendations.json content if present, else None.
+
+    Parallel to ``extract_findings`` — used by the task-completion route to
+    surface TPS Lean recommendations on the dashboard via the
+    ``lean_recommendations_ref`` field on the step instance.
+    """
+    p = _find_kaizen_recommendations(deliverable_paths, repo_root)
     if p is None:
         return None
     try:

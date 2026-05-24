@@ -9,7 +9,7 @@
   "properties": {
     "agent": {
       "type": "string",
-      "enum": ["coordinator", "controller", "fpa", "commercial", "reporting", "reviewer"]
+      "enum": ["coordinator", "controller", "fpa", "commercial", "reporting", "reviewer", "tps_lean"]
     },
     "period": {
       "type": "string",
@@ -188,7 +188,7 @@
             "id": { "type": "string" },
             "to_agent": {
               "type": "string",
-              "enum": ["controller", "fpa", "commercial", "reporting", "reviewer"]
+              "enum": ["controller", "fpa", "commercial", "reporting", "reviewer", "tps_lean"]
             },
             "ask": { "type": "string" },
             "deadline": { "type": "string", "description": "ISO date or 'this_phase'" },

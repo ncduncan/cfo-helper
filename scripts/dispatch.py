@@ -549,6 +549,78 @@ def run_p4_underwrite_review(task_dir: Path, **kwargs: Any) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# TPS Lean process review (task_types/lean_process_review_{monthly,quarterly}.yaml)
+# ---------------------------------------------------------------------------
+
+
+def run_p1_lean_diff_gate(task_dir: Path, **kwargs: Any) -> dict:
+    """P1 monthly Lean review — git-diff gate for template churn.
+
+    Reads ``profile/memory/lean_last_run.json`` (if present) to find the
+    last reviewed SHA, runs ``git diff --name-only <sha>...HEAD`` against
+    ``task_types/`` and ``runbooks/``, and emits a claim listing changed
+    files. If no changes, the surrounding P2 review step short-circuits
+    the template-review skill but still runs the pull-flow pass.
+    """
+    del task_dir, kwargs
+    raise _stub_error(
+        "run_p1_lean_diff_gate",
+        does=(
+            "compute the set of task_types/ and runbooks/ files changed "
+            "since profile/memory/lean_last_run.json.sha; emit "
+            "outputs/tps_lean/work_product.json with a claim per changed "
+            "file plus a scan-envelope claim (file count, current HEAD)"
+        ),
+        calls="git (subprocess) + scripts.lean.metrics for the envelope",
+        agent="agents/tps_lean.md",
+    )
+
+
+def run_p1_lean_wip_flow(task_dir: Path, **kwargs: Any) -> dict:
+    """P1 monthly Lean review — current-state WIP/pull-flow scan.
+
+    Always runs. Computes WIP per assignee, queue age, push signals,
+    bottleneck, batch coefficient, and context switching against the
+    live db. The surrounding P2 review consumes these claims and drafts
+    kaizen recommendations for any breach.
+    """
+    del task_dir, kwargs
+    raise _stub_error(
+        "run_p1_lean_wip_flow",
+        does=(
+            "call scripts.lean.wip_flow.compute() and write each section "
+            "as a computed claim on outputs/tps_lean/work_product.json. "
+            "When profile/db is empty, claims carry not_applicable and "
+            "the surrounding review draws no findings."
+        ),
+        calls="scripts.lean.wip_flow.compute + scripts.workproduct",
+        agent="agents/tps_lean.md",
+    )
+
+
+def run_p1_lean_metrics_quarterly(task_dir: Path, **kwargs: Any) -> dict:
+    """P1 quarterly Lean sweep — retrospective + current-state metrics.
+
+    Full sweep across task_types/, runbooks/, and the live db. Emits one
+    claim per metric (handoff counts per template, cycle-time
+    percentiles, queue dwell, value-add ratio, plus all six pull-flow
+    sections). The surrounding P2 review invokes all five skills.
+    """
+    del task_dir, kwargs
+    raise _stub_error(
+        "run_p1_lean_metrics_quarterly",
+        does=(
+            "call scripts.lean.metrics.compute + "
+            "scripts.lean.wip_flow.compute and emit "
+            "outputs/tps_lean/work_product.json with the full empirical "
+            "set as claims, anchored to the quarter-end LCD month"
+        ),
+        calls="scripts.lean.metrics + scripts.lean.wip_flow + scripts.workproduct",
+        agent="agents/tps_lean.md",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Memory-write helper (CLAUDE.md §2 rule 4)
 # ---------------------------------------------------------------------------
 
@@ -630,6 +702,10 @@ RUNNERS: dict[str, Callable[..., Any]] = {
     "run_p2_underwrite_screen": run_p2_underwrite_screen,
     "run_p3_underwrite_memo": run_p3_underwrite_memo,
     "run_p4_underwrite_review": run_p4_underwrite_review,
+    # tps_lean process review
+    "run_p1_lean_diff_gate": run_p1_lean_diff_gate,
+    "run_p1_lean_wip_flow": run_p1_lean_wip_flow,
+    "run_p1_lean_metrics_quarterly": run_p1_lean_metrics_quarterly,
 }
 
 

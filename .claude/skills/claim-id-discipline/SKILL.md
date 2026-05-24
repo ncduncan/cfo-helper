@@ -21,8 +21,20 @@ A `claim_id` resolvable to an entry in some upstream `work_product.json.claims[]
 | Provenance kind | Required fields |
 |---|---|
 | `source_cell` | `workbook`, `sheet`, plus cell coordinate or named range |
-| `computed` | `script` (path), `formula` (the SQL or Python expression), `inputs` (list of upstream claim ids or connector calls) |
+| `computed` | `script` (path), `formula` (the SQL or Python expression), `inputs` (list of upstream claim ids, connector calls, or `fs:` paths — see below) |
 | `connector` | `connector` (name), `call` (the callsite signature) |
+
+### Input token conventions
+
+The `inputs[]` array on a `computed` provenance entry accepts three string forms:
+
+| Form | Example | When to use |
+|---|---|---|
+| Dotted claim id | `controller.consolidated.revenue_total` | Upstream value from another agent's `work_product.json`. Default. |
+| `connector:<name>.<call>` | `connector:excel.gl` | Direct connector call (close-cycle source data). |
+| `fs:<repo-relative-path>` | `fs:task_types/month_end_close.yaml` | Filesystem read where the input is a repo artifact, not connector-fetched data. Used by the `tps_lean` agent (which reads `task_types/`, `runbooks/`, and `profile/db/` files) and by any future agent computing metrics over the repo's own content. |
+
+The `fs:` form lets a `computed` claim cite its filesystem inputs without forcing a fake connector. Reviewer's provenance audit checks that any `fs:`-prefixed input resolves to an extant path inside the repo at audit time.
 
 If none of these can be filled honestly, do not emit the number. Emit an `open_question` instead.
 

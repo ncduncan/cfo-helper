@@ -1,0 +1,86 @@
+name: lean_process_review_quarterly
+title_template: "TPS Lean process review — {period} (quarterly sweep)"
+description: |
+  Quarterly TPS Lean deep sweep across the full process surface:
+  every task_type, every runbook, and the historical record in
+  profile/db/. Unlike the monthly cadence (which is partially
+  diff-gated), the quarterly run is always full-scope.
+
+  Period anchors to the quarter-end LCD month (Mar/Jun/Sep/Dec) so the
+  existing work_product.json `period: YYYY-MM` schema constraint holds
+  without modification. The kaizen_recommendations.json `scope_period`
+  field carries the looser `YYYY-Qn` form for board materials.
+
+  P1 (`lean.compute_metrics_quarterly`) — runs both
+  `scripts.lean.metrics.compute` (retrospective: handoff counts per
+  template, cycle-time percentiles, value-add ratio, queue dwell from
+  completed history) and `scripts.lean.wip_flow.compute` (current
+  state). Emits each metric as a `computed` claim on the
+  outputs/tps_lean/work_product.json.
+
+  P2 is the agent's full-scope review. Invokes all five Lean skills:
+  - `tps-lean-principles` (vocabulary)
+  - `lean-standard-work-review` (design-time micro lens)
+  - `lean-value-stream-review` (retrospective macro lens)
+  - `lean-pull-flow-review` (real-time current state lens)
+  - `kaizen-recommendation-structure` (A3 output discipline)
+  Plus `writing-style` for prose.
+
+  Output is the quarterly kaizen punch list — typically more
+  recommendations than a monthly run, focused on the structural changes
+  the monthly cadence cannot reach (rebalancing roles, revising takt,
+  retiring or merging task_types).
+
+  Cadence: scheduled by the CFO on the dashboard Schedules page; not
+  automatic. Suggested cron: `0 9 5 1,4,7,10 *` — 5th of the month
+  after each quarter-end close completes.
+
+  See `agents/tps_lean.md` for the agent contract and self-checks.
+brief_schema:
+  - { field: period, type: month, required: true,
+      label: "Quarter-end period (YYYY-MM, must be Mar/Jun/Sep/Dec)" }
+frequency: quarterly
+pipeline:
+  - phase: P1
+    agent: tps_lean
+    kind: deterministic
+    deterministic_runner: scripts.dispatch.run_p1_lean_metrics_quarterly
+    description: |
+      Full empirical sweep. Call scripts.lean.metrics.compute() with
+      task_types_dir=task_types/ and the live db, then call
+      scripts.lean.wip_flow.compute() against the live db. Emit one
+      computed claim per metric to outputs/tps_lean/work_product.json:
+
+      - tps_lean.scan.files_examined (envelope)
+      - tps_lean.template.<task_type>.{phases,handoffs,cfo_checkpoints}
+        per task_type yaml
+      - tps_lean.metrics.cycle_time.{p50_days, p90_days, n}
+      - tps_lean.metrics.value_add.{va_pct, flow_efficiency_pct, n}
+      - tps_lean.metrics.queue_dwell.{p50_hours, p90_hours, n}
+      - tps_lean.wip_flow.{wip_per_assignee, queue_age, push_signals,
+        bottleneck, batch_coefficient, context_switching}
+
+      Each claim carries `fs:<path>` inputs documenting the file(s)
+      read. Live-data sections degrade to `not_applicable` when
+      profile/db is empty.
+  - phase: P2
+    agent: tps_lean
+    kind: deterministic+narrative
+    description: |
+      The tps_lean agent reads every P1 claim, applies the four review
+      lens skills (standard-work, value-stream, pull-flow, principles),
+      and drafts kaizen_recommendations.json with all findings
+      promoted through kaizen-recommendation-structure. Apply
+      writing-style to the summary and every prose field. The
+      quarterly run typically produces 5-15 recommendations across
+      HIGH/MED/LOW severity.
+  - phase: P3
+    agent: tps_lean
+    kind: narrative_only
+    checkpoint: true
+    description: |
+      CFO checkpoint. Same shape as the monthly P3 but with a
+      larger punch list. CFO accepts, defers, or rejects each
+      recommendation; humans implement the accepted ones via the
+      normal dashboard flow (a new task instance per accepted
+      recommendation, owned by the named owner_role).

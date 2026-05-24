@@ -54,6 +54,7 @@ directly — go through the CLI so the dashboard's SSE refresh stays correct.
       - `agents/commercial.md` — deal underwriting, pipeline, customer
       - `agents/reporting.md` — narrative assembly, exec summary
       - `agents/reviewer.md` — independent audit, findings, tie-outs
+      - `agents/tps_lean.md` — TPS / Lean improvement consultant (process review, kaizen recommendations)
 
       For roles not listed (e.g. `analyst`), default to the FP&A prompt.
 
@@ -78,6 +79,8 @@ directly — go through the CLI so the dashboard's SSE refresh stays correct.
         (csv, md, png) referenced in claims.
       - For reviewer steps: also `findings.json` (schema:
         `agents/review_findings.schema.json`).
+      - For tps_lean steps: also `kaizen_recommendations.json` (schema:
+        `agents/kaizen_recommendations.schema.json`).
       - For narrative-only steps without numeric claims: `report.md` or
         `exec_summary.md` as appropriate.
 

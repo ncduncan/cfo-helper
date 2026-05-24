@@ -52,6 +52,7 @@ def _validate_agent_name(agent: str) -> None:
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _WP_SCHEMA_PATH = _REPO_ROOT / "agents" / "work_product.schema.json"
 _RV_SCHEMA_PATH = _REPO_ROOT / "agents" / "review_findings.schema.json"
+_KR_SCHEMA_PATH = _REPO_ROOT / "agents" / "kaizen_recommendations.schema.json"
 
 
 def _load_schema(path: Path) -> dict:
@@ -226,4 +227,51 @@ def load_findings(workspace: Path) -> dict:
     with path.open() as f:
         doc = json.load(f)
     jsonschema.validate(doc, _load_schema(_RV_SCHEMA_PATH))
+    return doc
+
+
+# --- TPS Lean kaizen recommendations -----------------------------------------
+
+def write_kaizen_recommendations(
+    workspace: Path,
+    *,
+    scope_period: str,
+    lean_metrics: dict,
+    findings: list[dict],
+    recommendations: list[dict],
+    target_artifacts: list[str] | None = None,
+    summary: str = "",
+    open_questions: list[dict] | None = None,
+) -> Path:
+    """Write outputs/tps_lean/kaizen_recommendations.json after schema validation.
+
+    Parallel to ``write_findings`` for Reviewer. The TPS Lean agent emits both
+    a ``work_product.json`` (claims with provenance) and this sibling
+    artifact carrying the prose findings and A3-structured recommendations.
+    """
+    doc = {
+        "agent": "tps_lean",
+        "scope_period": scope_period,
+        "produced_at": now(),
+        "lean_metrics": lean_metrics,
+        "findings": findings,
+        "recommendations": recommendations,
+    }
+    if target_artifacts is not None:
+        doc["target_artifacts"] = target_artifacts
+    if summary:
+        doc["summary"] = summary
+    if open_questions:
+        doc["open_questions"] = open_questions
+    jsonschema.validate(doc, _load_schema(_KR_SCHEMA_PATH))
+    out = workspace / "outputs" / "tps_lean" / "kaizen_recommendations.json"
+    _atomic_write_json(out, doc)
+    return out
+
+
+def load_kaizen_recommendations(workspace: Path) -> dict:
+    path = workspace / "outputs" / "tps_lean" / "kaizen_recommendations.json"
+    with path.open() as f:
+        doc = json.load(f)
+    jsonschema.validate(doc, _load_schema(_KR_SCHEMA_PATH))
     return doc
